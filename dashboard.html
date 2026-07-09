@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra Manager - Dashboard</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #334155;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding-bottom: 80px; /* Ruang untuk footer */
+            font-size: 13px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .user-info h2 { margin: 0; font-size: 1rem; }
+        .user-info span { font-size: 0.75rem; color: #64748b; }
+        .club-logo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+
+        /* --- GRID MENU 12 FITUR --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 Kolom */
+            gap: 10px;
+            padding: 15px;
+        }
+        .menu-item {
+            background: var(--card);
+            padding: 15px 5px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .menu-item:active { transform: scale(0.95); background: #f8fafc; }
+        .icon { font-size: 1.5rem; display: block; margin-bottom: 5px; }
+        .label { font-weight: 600; font-size: 0.75rem; }
+
+        /* --- CHAT SECTION --- */
+        .chat-section {
+            background: white;
+            margin: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .chat-header { font-weight: bold; margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .chat-list { max-height: 200px; overflow-y: auto; margin-bottom: 15px; }
+        .chat-bubble {
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+        }
+        .chat-bubble strong { color: var(--primary); }
+        
+        .chat-input-area { display: flex; gap: 8px; }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            outline: none;
+        }
+        button.send-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.7rem;
+            color: #94a3b8;
+            background: #f8fafc;
+            border-top: 1px solid var(--border);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="user-info">
+            <h2>Halo, Manajer!</h2>
+            <span>FC Ultra United • Liga 1</span>
+        </div>
+        <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png" alt="Logo" class="club-logo">
+    </header>
+
+    <!-- 12 Fitur Menu Grid -->
+    <div class="grid-container">
+        <div class="menu-item"><span class="icon">🏟️</span><span class="label">Stadion</span></div>
+        <div class="menu-item"><span class="icon">👥</span><span class="label">Skuad</span></div>
+        <div class="menu-item"><span class="icon">🔄</span><span class="label">Transfer</span></div>
+        <div class="menu-item"><span class="icon">📅</span><span class="label">Jadwal</span></div>
+        <div class="menu-item"><span class="icon">🏆</span><span class="label">Liga</span></div>
+        <div class="menu-item"><span class="icon">💰</span><span class="label">Keuangan</span></div>
+        <div class="menu-item"><span class="icon">🎓</span><span class="label">Akademi</span></div>
+        <div class="menu-item"><span class="icon">⚕️</span><span class="label">Medis</span></div>
+        <div class="menu-item"><span class="icon">📊</span><span class="label">Statistik</span></div>
+        <div class="menu-item"><span class="icon">📢</span><span class="label">Berita</span></div>
+        <div class="menu-item"><span class="icon">⚙️</span><span class="label">Pengaturan</span></div>
+        <div class="menu-item"><span class="icon">🎁</span><span class="label">Bonus</span></div>
+    </div>
+
+    <!-- Chat Antar Player -->
+    <div class="chat-section">
+        <div class="chat-header">
+            <span>💬 Obrolan Manajer</span>
+            <span style="font-size: 0.7rem; color: #64748b;">5 Terakhir</span>
+        </div>
+        <div class="chat-list" id="chatList">
+            <div class="chat-bubble"><strong>Budi (Persija):</strong> Ada yang mau tukar striker gak?</div>
+            <div class="chat-bubble"><strong>Siti (PSIS):</strong> Gw cari bek tengah rating 80+ nih.</div>
+            <div class="chat-bubble"><strong>Rian (Arema):</strong> Pertandingan tadi malam seru banget!</div>
+            <div class="chat-bubble"><strong>Admin:</strong> Transfer market akan tutup dalam 2 jam.</div>
+            <div class="chat-bubble"><strong>Dewi (PSS):</strong> Siap-siap lawan tim saya ya!</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Kirim pesan...">
+            <button class="send-btn" onclick="sendMessage()">Kirim</button>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 Ultra Manager Project. All rights reserved.
+    </footer>
+
+    <script>
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const list = document.getElementById('chatList');
+            
+            if (input.value.trim() !== "") {
+                const newBubble = document.createElement('div');
+                newBubble.className = 'chat-bubble';
+                newBubble.style.background = '#dbeafe'; // Warna beda untuk chat sendiri
+                newBubble.innerHTML = `<strong>Kamu:</strong> ${input.value}`;
+                
+                list.appendChild(newBubble);
+                input.value = "";
+                list.scrollTop = list.scrollHeight; // Auto scroll ke bawah
+            }
+        }
+    </script>
+
+</body>
+</html>
