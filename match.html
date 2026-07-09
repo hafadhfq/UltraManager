@@ -3,27 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultra Manager - Live Match v2</title>
+    <title>Ultra Manager - Match Stats Pro</title>
     <style>
         :root {
-            --primary: #2563eb;
             --bg: #f8fafc;
             --card: #ffffff;
             --text: #1e293b;
             --border: #e2e8f0;
-            --home: #10b981; /* Hijau */
-            --away: #3b82f6; /* Biru */
+            --home-color: #10b981; /* Hijau Emerald */
+            --away-color: #3b82f6; /* Biru Royal */
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            overflow: hidden; /* Mencegah scroll body utama */
+            overflow: hidden;
         }
 
         /* --- HEADER & SCOREBOARD --- */
@@ -35,57 +34,106 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             z-index: 50;
         }
-        .score-row { display: flex; justify-content: space-between; align-items: center; max-width: 300px; margin: 0 auto; }
+        .score-row { 
+            display: flex; justify-content: space-between; align-items: center; 
+            max-width: 320px; margin: 0 auto; 
+        }
         .team { font-weight: bold; font-size: 0.9rem; width: 30%; }
-        .score { font-size: 2rem; font-weight: 800; }
+        .score { font-size: 2rem; font-weight: 800; letter-spacing: 1px; }
         .timer { font-family: monospace; color: #4ade80; font-size: 0.9rem; margin-top: 5px; }
 
-        /* --- TOGGLE STATS BUTTON --- */
-        .stats-toggle-btn {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
+        .toggle-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
             color: white;
-            padding: 8px 15px;
+            padding: 6px 16px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 12px;
             transition: all 0.2s;
         }
-        .stats-toggle-btn:hover { background: rgba(255,255,255,0.2); }
+        .toggle-btn:hover { background: rgba(255,255,255,0.25); }
 
-        /* --- STATISTICS PANEL (Hidden by default) --- */
+        /* --- STATISTIK PANEL (Rapi Seperti Foto) --- */
         #statsPanel {
             background: white;
-            padding: 15px;
+            padding: 20px 15px;
             border-bottom: 1px solid var(--border);
-            display: none; /* Hidden initially */
+            display: none; /* Hidden by default */
             animation: slideDown 0.3s ease;
+            max-height: 50vh;
+            overflow-y: auto;
         }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
+        .stat-title { 
+            text-align: center; font-weight: bold; font-size: 0.9rem; 
+            margin-bottom: 15px; color: #334155; 
+        }
+
+        /* Layout Baris Statistik */
         .stat-row {
             display: flex;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             font-size: 0.8rem;
         }
-        .stat-val { width: 40px; font-weight: bold; text-align: center; }
-        .stat-name { flex: 1; text-align: center; color: #64748b; font-size: 0.75rem; }
-        
-        .bar-container { flex: 2; height: 6px; background: #f1f5f9; border-radius: 3px; margin: 0 10px; position: relative; display: flex; overflow: hidden; }
-        .bar-home { background: var(--home); height: 100%; transition: width 0.5s; }
-        .bar-away { background: var(--away); height: 100%; transition: width 0.5s; margin-left: auto; }
 
-        /* --- COMMENTARY LOG (Scrollable Area) --- */
+        .val-left { 
+            width: 45px; text-align: right; font-weight: bold; color: #334155; 
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .label-center { 
+            flex: 1; text-align: center; color: #64748b; font-size: 0.75rem; 
+            padding: 0 10px;
+        }
+        
+        .val-right { 
+            width: 45px; text-align: left; font-weight: bold; color: #334155; 
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Container Bar Warna */
+        .bar-track {
+            position: absolute;
+            top: 50%; left: 55px; right: 55px; /* Sesuaikan dengan lebar val-left/right */
+            height: 6px;
+            background: #f1f5f9;
+            border-radius: 3px;
+            transform: translateY(-50%);
+            display: flex;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .bar-fill-home { 
+            background: var(--home-color); height: 100%; 
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .bar-fill-away { 
+            background: var(--away-color); height: 100%; 
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+
+        /* Wrapper relatif untuk menumpuk teks di atas bar */
+        .stat-content {
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* --- COMMENTARY LOG --- */
         .log-container {
             flex: 1;
             padding: 15px;
             overflow-y: auto;
             background: var(--bg);
-            /* Batasi tinggi visual agar hanya ~5 baris terlihat jelas sebelum scroll */
             display: flex;
-            flex-direction: column-reverse; /* Item baru di atas */
+            flex-direction: column-reverse;
         }
 
         .log-item {
@@ -100,7 +148,6 @@
             animation: fadeIn 0.4s ease;
         }
         
-        /* Event Colors */
         .log-goal { border-left-color: #f59e0b; background: #fffbeb; }
         .log-chance { border-left-color: #8b5cf6; background: #f5f3ff; }
         .log-card { border-left-color: #ef4444; background: #fef2f2; }
@@ -108,7 +155,7 @@
 
         .log-time { font-weight: bold; color: #64748b; margin-right: 8px; font-size: 0.75rem; }
 
-        /* --- FOOTER CONTROLS --- */
+        /* --- FOOTER --- */
         footer {
             background: white;
             padding: 10px;
@@ -119,7 +166,7 @@
         }
         .btn { padding: 8px 16px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.8rem; }
         .btn-pause { background: #f1f5f9; color: var(--text); }
-        .btn-resume { background: var(--primary); color: white; }
+        .btn-resume { background: var(--primary, #2563eb); color: white; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -134,71 +181,110 @@
             <div class="team">Real Madrid</div>
         </div>
         <div class="timer" id="timerDisplay">00'</div>
-        <button class="stats-toggle-btn" onclick="toggleStats()">📊 Tampilkan Statistik</button>
+        <button class="toggle-btn" onclick="toggleStats()">📊 Lihat Statistik Lengkap</button>
     </header>
 
-    <!-- Panel Statistik (Toggle) -->
+    <!-- Panel Statistik (Desain Rapi) -->
     <div id="statsPanel">
-        <!-- Baris 1: Penguasaan Bola -->
+        <div class="stat-title">Ringkasan Pertandingan</div>
+
+        <!-- Penguasaan Bola -->
         <div class="stat-row">
-            <div class="stat-val" id="s_poss_h">50%</div>
-            <div class="bar-container">
-                <div class="bar-home" id="bar_poss_h" style="width: 50%"></div>
-                <div class="bar-away" id="bar_poss_a" style="width: 50%"></div>
+            <div class="stat-content">
+                <div class="val-left" id="s_poss_h">50%</div>
+                <div class="label-center">Penguasaan bola</div>
+                <div class="val-right" id="s_poss_a">50%</div>
+                <div class="bar-track">
+                    <div class="bar-fill-home" id="bar_poss_h" style="width: 50%"></div>
+                    <div class="bar-fill-away" id="bar_poss_a" style="width: 50%"></div>
+                </div>
             </div>
-            <div class="stat-val" id="s_poss_a">50%</div>
-            <div class="stat-name" style="position:absolute; width:100%; text-align:center; color:white; font-weight:bold; text-shadow:0 1px 2px black;">Penguasaan Bola</div>
         </div>
 
-        <!-- Baris 2: Ekspektasi Gol (xG) -->
+        <!-- Ekspektasi Gol (xG) -->
         <div class="stat-row">
-            <div class="stat-val" id="s_xg_h">0.00</div>
-            <div class="bar-container">
-                <div class="bar-home" id="bar_xg_h" style="width: 50%"></div>
-                <div class="bar-away" id="bar_xg_a" style="width: 50%"></div>
+            <div class="stat-content">
+                <div class="val-left" id="s_xg_h">0.00</div>
+                <div class="label-center">Ekspektasi gol (xG)</div>
+                <div class="val-right" id="s_xg_a">0.00</div>
+                <div class="bar-track">
+                    <div class="bar-fill-home" id="bar_xg_h" style="width: 50%"></div>
+                    <div class="bar-fill-away" id="bar_xg_a" style="width: 50%"></div>
+                </div>
             </div>
-            <div class="stat-val" id="s_xg_a">0.00</div>
-            <div class="stat-name">Ekspektasi Gol (xG)</div>
         </div>
 
-        <!-- Baris 3: Total Tembakan -->
+        <!-- Peluang Emas -->
         <div class="stat-row">
-            <div class="stat-val" id="s_shot_h">0</div>
-            <div class="bar-container">
-                <div class="bar-home" id="bar_shot_h" style="width: 50%"></div>
-                <div class="bar-away" id="bar_shot_a" style="width: 50%"></div>
+            <div class="stat-content">
+                <div class="val-left" id="s_big_h">0</div>
+                <div class="label-center">Peluang emas</div>
+                <div class="val-right" id="s_big_a">0</div>
+                <div class="bar-track">
+                    <div class="bar-fill-home" id="bar_big_h" style="width: 50%"></div>
+                    <div class="bar-fill-away" id="bar_big_a" style="width: 50%"></div>
+                </div>
             </div>
-            <div class="stat-val" id="s_shot_a">0</div>
-            <div class="stat-name">Total Tembakan</div>
         </div>
 
-        <!-- Baris 4: Peluang Emas -->
+        <!-- Total Tembakan -->
         <div class="stat-row">
-            <div class="stat-val" id="s_big_h">0</div>
-            <div class="bar-container">
-                <div class="bar-home" id="bar_big_h" style="width: 50%"></div>
-                <div class="bar-away" id="bar_big_a" style="width: 50%"></div>
+            <div class="stat-content">
+                <div class="val-left" id="s_shot_h">0</div>
+                <div class="label-center">Total tembakan</div>
+                <div class="val-right" id="s_shot_a">0</div>
+                <div class="bar-track">
+                    <div class="bar-fill-home" id="bar_shot_h" style="width: 50%"></div>
+                    <div class="bar-fill-away" id="bar_shot_a" style="width: 50%"></div>
+                </div>
             </div>
-            <div class="stat-val" id="s_big_a">0</div>
-            <div class="stat-name">Peluang Emas</div>
         </div>
 
-        <!-- Baris 5: Tendangan Sudut -->
+        <!-- Penyelamatan Kiper -->
         <div class="stat-row">
-            <div class="stat-val" id="s_cor_h">0</div>
-            <div class="bar-container">
-                <div class="bar-home" id="bar_cor_h" style="width: 50%"></div>
-                <div class="bar-away" id="bar_cor_a" style="width: 50%"></div>
+            <div class="stat-content">
+                <div class="val-left" id="s_save_h">0</div>
+                <div class="label-center">Penyelamatan kiper</div>
+                <div class="val-right" id="s_save_a">0</div>
+                <div class="bar-track">
+                    <div class="bar-fill-home" id="bar_save_h" style="width: 50%"></div>
+                    <div class="bar-fill-away" id="bar_save_a" style="width: 50%"></div>
+                </div>
             </div>
-            <div class="stat-val" id="s_cor_a">0</div>
-            <div class="stat-name">Tendangan Sudut</div>
         </div>
+
+        <!-- Tendangan Sudut -->
+        <div class="stat-row">
+            <div class="stat-content">
+                <div class="val-left" id="s_cor_h">0</div>
+                <div class="label-center">Tendangan sudut</div>
+                <div class="val-right" id="s_cor_a">0</div>
+                <div class="bar-track">
+                    <div class="bar-fill-home" id="bar_cor_h" style="width: 50%"></div>
+                    <div class="bar-fill-away" id="bar_cor_a" style="width: 50%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pelanggaran -->
+        <div class="stat-row">
+            <div class="stat-content">
+                <div class="val-left" id="s_foul_h">0</div>
+                <div class="label-center">Pelanggaran</div>
+                <div class="val-right" id="s_foul_a">0</div>
+                <div class="bar-track">
+                    <div class="bar-fill-home" id="bar_foul_h" style="width: 50%"></div>
+                    <div class="bar-fill-away" id="bar_foul_a" style="width: 50%"></div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Area Komentar (Scrollable) -->
+    <!-- Area Komentar -->
     <div class="log-container" id="logBox">
         <div class="log-item">
-            <span class="log-time">00'</span> 🏁 Pertandingan dimulai! Wasit meniup peluit awal.
+            <span class="log-time">00'</span>  Pertandingan dimulai! Wasit meniup peluit awal.
         </div>
     </div>
 
@@ -221,7 +307,9 @@
             xGH: 0.0, xGA: 0.0,
             shotH: 0, shotA: 0,
             bigH: 0, bigA: 0,
-            corH: 0, corA: 0
+            corH: 0, corA: 0,
+            saveH: 0, saveA: 0,
+            foulH: 0, foulA: 0
         };
 
         // --- ENGINE UTAMA ---
@@ -232,15 +320,15 @@
                     document.getElementById('timerDisplay').innerText = minute + "'";
                     processMinute();
                 } else if (minute === 90) {
-                    addLog(90, "neutral", " Pertandingan Selesai!");
+                    addLog(90, "neutral", "  Pertandingan Selesai!");
                     isPaused = true;
                     updateButtons();
                 }
-            }, 1500); // Kecepatan simulasi (1.5 detik = 1 menit)
+            }, 1200); // Kecepatan simulasi
         }
 
         function processMinute() {
-            // 1. Update Momentum (Random Walk)
+            // 1. Update Momentum
             momentum += (Math.random() * 10 - 5);
             if (momentum > 95) momentum = 95;
             if (momentum < 5) momentum = 5;
@@ -248,26 +336,25 @@
             // 2. Update Penguasaan Bola
             if (momentum > 50) stats.possH++; else stats.possA++;
 
-            // 3. Tentukan Event (Hanya event KRUSIAL yang memicu log)
+            // 3. Event Logic
             let roll = Math.random() * 100;
 
-            // GOL (Sangat Jarang)
+            // GOL
             if ((momentum > 80 && roll < 3) || (momentum < 20 && roll < 2)) {
                 triggerGoal();
             }
-            // PELUANG EMAS / BIG CHANCE (Jarang)
+            // PELUANG EMAS
             else if ((momentum > 70 && roll < 8) || (momentum < 30 && roll < 6)) {
                 triggerBigChance();
             }
-            // CORNER KICK (Agak Sering)
+            // CORNER
             else if (roll < 12) {
                 triggerCorner();
             }
-            // KARTU / FOUL (Jarang)
-            else if (roll > 97) {
-                triggerCard();
+            // FOUL / KARTU
+            else if (roll > 96) {
+                triggerFoul();
             }
-            // Jika tidak ada event krusial, JANGAN tambah log (sesuai request)
             
             updateStatsUI();
         }
@@ -276,23 +363,26 @@
         function triggerGoal() {
             if (momentum > 50) {
                 scoreH++;
-                stats.xGH += 0.75;
-                addLog(minute, "goal", `⚽ GOLLL!! FC Ultra mencetak gol indah! Skor ${scoreH}-${scoreA}`);
+                stats.xGH += 0.85;
+                addLog(minute, "goal", `⚽ GOLLL!! FC Ultra mencetak gol! Skor ${scoreH}-${scoreA}`);
             } else {
                 scoreA++;
-                stats.xGA += 0.75;
-                addLog(minute, "goal", `⚽ GOLLL!! Real Madrid membalas keadaan! Skor ${scoreH}-${scoreA}`);
+                stats.xGA += 0.85;
+                addLog(minute, "goal", `⚽ GOLLL!! Real Madrid membalas! Skor ${scoreH}-${scoreA}`);
             }
             document.getElementById('scoreDisplay').innerText = `${scoreH} - ${scoreA}`;
-            momentum = 50; // Reset setelah gol
+            momentum = 50; 
         }
 
         function triggerBigChance() {
             if (momentum > 50) {
                 stats.shotH++; stats.bigH++; stats.xGH += 0.45;
-                addLog(minute, "chance", "🔥 Peluang Emas! Tembakan keras FC Ultra masih membentur tiang!");
+                // Simulasi penyelamatan jika tidak gol
+                if(Math.random() > 0.3) stats.saveA++; 
+                addLog(minute, "chance", "🔥 Peluang Emas! Tembakan keras FC Ultra masih bisa diselamatkan kiper!");
             } else {
                 stats.shotA++; stats.bigA++; stats.xGA += 0.45;
+                if(Math.random() > 0.3) stats.saveH++;
                 addLog(minute, "chance", "🔥 Peluang Emas! Vinicius Jr lolos tapi tendangannya melambung!");
             }
         }
@@ -307,7 +397,8 @@
             }
         }
 
-        function triggerCard() {
+        function triggerFoul() {
+            if (momentum > 50) stats.foulA++; else stats.foulH++;
             addLog(minute, "card", "🟨 Kartu Kuning! Wasit menegur pemain karena pelanggaran telat.");
         }
 
@@ -317,58 +408,53 @@
             const div = document.createElement('div');
             div.className = `log-item log-${type}`;
             div.innerHTML = `<span class="log-time">${time}'</span> ${text}`;
-            box.prepend(div); // Tambah ke atas
-            
-            // Optional: Hapus log lama jika terlalu banyak (>50 item)
+            box.prepend(div);
             if (box.children.length > 50) box.lastChild.remove();
         }
 
         function toggleStats() {
             const panel = document.getElementById('statsPanel');
-            const btn = document.querySelector('.stats-toggle-btn');
+            const btn = document.querySelector('.toggle-btn');
             if (panel.style.display === 'none' || panel.style.display === '') {
                 panel.style.display = 'block';
                 btn.innerText = "🙈 Sembunyikan Statistik";
             } else {
                 panel.style.display = 'none';
-                btn.innerText = "📊 Tampilkan Statistik";
+                btn.innerText = "📊 Lihat Statistik Lengkap";
             }
         }
 
+        // Fungsi Helper untuk Update Bar
+        function updateBar(idH, idA, valH, valA, suffix = "") {
+            let total = valH + valA;
+            if (total === 0) total = 1; // Hindari divide by zero
+            
+            let pctH = (valH / total) * 100;
+            let pctA = (valA / total) * 100;
+
+            document.getElementById(idH).innerText = (typeof valH === 'number' && !Number.isInteger(valH)) ? valH.toFixed(2) + suffix : valH + suffix;
+            document.getElementById(idA).innerText = (typeof valA === 'number' && !Number.isInteger(valA)) ? valA.toFixed(2) + suffix : valA + suffix;
+            
+            document.getElementById('bar_' + idH.replace('s_', '')).style.width = pctH + "%";
+            document.getElementById('bar_' + idA.replace('s_', '')).style.width = pctA + "%";
+        }
+
         function updateStatsUI() {
-            // Hitung Persentase
+            // Penguasaan Bola (%)
             let totalPoss = stats.possH + stats.possA;
             let pH = totalPoss === 0 ? 50 : Math.round((stats.possH / totalPoss) * 100);
-            let pA = 100 - pH;
-
-            let totalXG = stats.xGH + stats.xGA;
-            let xGH_pct = totalXG === 0 ? 50 : (stats.xGH / totalXG) * 100;
-            
-            let totalShot = stats.shotH + stats.shotA;
-            let sH_pct = totalShot === 0 ? 50 : (stats.shotH / totalShot) * 100;
-
-            // Update Text
             document.getElementById('s_poss_h').innerText = pH + "%";
-            document.getElementById('s_poss_a').innerText = pA + "%";
+            document.getElementById('s_poss_a').innerText = (100-pH) + "%";
             document.getElementById('bar_poss_h').style.width = pH + "%";
-            document.getElementById('bar_poss_a').style.width = pA + "%";
+            document.getElementById('bar_poss_a').style.width = (100-pH) + "%";
 
-            document.getElementById('s_xg_h').innerText = stats.xGH.toFixed(2);
-            document.getElementById('s_xg_a').innerText = stats.xGA.toFixed(2);
-            document.getElementById('bar_xg_h').style.width = xGH_pct + "%";
-            document.getElementById('bar_xg_a').style.width = (100-xGH_pct) + "%";
-
-            document.getElementById('s_shot_h').innerText = stats.shotH;
-            document.getElementById('s_shot_a').innerText = stats.shotA;
-            document.getElementById('bar_shot_h').style.width = sH_pct + "%";
-            document.getElementById('bar_shot_a').style.width = (100-sH_pct) + "%";
-
-            document.getElementById('s_big_h').innerText = stats.bigH;
-            document.getElementById('s_big_a').innerText = stats.bigA;
-            // Logic bar big chance similar to shots...
-            
-            document.getElementById('s_cor_h').innerText = stats.corH;
-            document.getElementById('s_cor_a').innerText = stats.corA;
+            // Stat lainnya menggunakan helper
+            updateBar('s_xg_h', 's_xg_a', stats.xGH, stats.xGA);
+            updateBar('s_big_h', 's_big_a', stats.bigH, stats.bigA);
+            updateBar('s_shot_h', 's_shot_a', stats.shotH, stats.shotA);
+            updateBar('s_save_h', 's_save_a', stats.saveH, stats.saveA);
+            updateBar('s_cor_h', 's_cor_a', stats.corH, stats.corA);
+            updateBar('s_foul_h', 's_foul_a', stats.foulH, stats.foulA);
         }
 
         function togglePause() {
@@ -381,7 +467,7 @@
             document.getElementById('btnResume').style.display = isPaused ? 'inline-block' : 'none';
         }
 
-        // Start Game on Load
+        // Start Game
         startMatch();
     </script>
 </body>
