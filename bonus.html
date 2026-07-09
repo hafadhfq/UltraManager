@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra Manager - Bonus</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #334155;
+            --border: #e2e8f0;
+            --gold: #f59e0b;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding-bottom: 20px;
+            font-size: 13px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .back-btn { text-decoration: none; font-size: 1.2rem; color: var(--text); cursor: pointer; }
+        h1 { margin: 0; font-size: 1.1rem; flex: 1; }
+
+        /* --- TOTAL BONUS CARD --- */
+        .total-bonus-card {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            margin: 15px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+        }
+        .tb-label { font-size: 0.8rem; opacity: 0.9; }
+        .tb-amount { font-size: 1.8rem; font-weight: bold; margin: 5px 0; }
+        .tb-desc { font-size: 0.75rem; opacity: 0.8; }
+
+        /* --- TARGET LIST --- */
+        .section-title { padding: 0 15px; margin: 20px 0 10px 0; font-weight: bold; }
+        .target-list { padding: 0 15px; }
+
+        .target-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tc-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; }
+        .tc-title { font-weight: bold; font-size: 0.95rem; }
+        .tc-reward { 
+            background: #ecfdf5; 
+            color: var(--success); 
+            padding: 4px 8px; 
+            border-radius: 6px; 
+            font-size: 0.75rem; 
+            font-weight: bold; 
+        }
+
+        .progress-container {
+            background: #f1f5f9;
+            height: 8px;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .tc-footer { display: flex; justify-content: space-between; font-size: 0.75rem; color: #64748b; }
+
+        .btn-claim {
+            width: 100%;
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 10px;
+            cursor: pointer;
+            display: none; /* Hidden by default */
+        }
+        
+        /* Status Badge */
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            color: #64748b;
+        }
+        .status-active { background: #dbeafe; color: var(--primary); }
+        .status-done { background: #d1fae5; color: var(--success); }
+
+        footer { text-align: center; padding: 20px; font-size: 0.7rem; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <a href="dashboard.html" class="back-btn">⬅️</a>
+        <h1>Pusat Bonus</h1>
+    </header>
+
+    <!-- Total Klaim -->
+    <div class="total-bonus-card">
+        <div class="tb-label">Total Bonus Tersedia</div>
+        <div class="tb-amount">Rp 2.500.000.000</div>
+        <div class="tb-desc">Dana siap digunakan untuk transfer pemain!</div>
+    </div>
+
+    <!-- Daftar Target -->
+    <div class="section-title">Target Musim Ini</div>
+    <div class="target-list">
+        
+        <!-- Target 1: Sudah Selesai -->
+        <div class="target-card">
+            <div class="tc-header">
+                <div class="tc-title">🏆 Juara Paruh Musim</div>
+                <span class="status-badge status-done">Selesai</span>
+            </div>
+            <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">Finis di posisi #1 pada Pekan 19</div>
+            <div class="tc-reward">Hadiah: Rp 1.000.000.000</div>
+            <button class="btn-claim" style="display: block;" onclick="klaimBonus(this)">Klaim Sekarang</button>
+        </div>
+
+        <!-- Target 2: Sedang Berjalan -->
+        <div class="target-card">
+            <div class="tc-header">
+                <div class="tc-title">⚽ Top Skor Liga</div>
+                <span class="status-badge status-active">Aktif</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-fill" style="width: 75%"></div>
+            </div>
+            <div class="tc-footer">
+                <span>Progress: 18/25 Gol</span>
+                <span>Rp 500.000.000</span>
+            </div>
+        </div>
+
+        <!-- Target 3: Baru Dimulai -->
+        <div class="target-card">
+            <div class="tc-header">
+                <div class="tc-title">🛡️ Pertahanan Terkuat</div>
+                <span class="status-badge status-active">Aktif</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-fill" style="width: 20%"></div>
+            </div>
+            <div class="tc-footer">
+                <span>Progress: 2/10 Clean Sheet</span>
+                <span>Rp 750.000.000</span>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        &copy; 2026 Ultra Manager Project
+    </footer>
+
+    <script>
+        function klaimBonus(btn) {
+            btn.innerHTML = "✅ Berhasil Diklaim";
+            btn.style.background = "#cbd5e1";
+            btn.style.color = "#64748b";
+            btn.disabled = true;
+            alert("Bonus sebesar Rp 1 Miliar telah ditambahkan ke kas klub!");
+        }
+    </script>
+
+</body>
+</html>
