@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra Manager - Jadwal</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #334155;
+            --border: #e2e8f0;
+            --win: #10b981;
+            --lose: #ef4444;
+            --draw: #64748b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding-bottom: 20px;
+            font-size: 13px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .back-btn { text-decoration: none; font-size: 1.2rem; color: var(--text); cursor: pointer; }
+        h1 { margin: 0; font-size: 1.1rem; flex: 1; }
+
+        /* --- TIMELINE JADWAL --- */
+        .schedule-container { padding: 15px; }
+        
+        .match-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Garis status di kiri (Hijau=Menang, Merah=Kalah, Biru=Akan Datang) */
+        .match-card.win { border-left: 5px solid var(--win); }
+        .match-card.lose { border-left: 5px solid var(--lose); }
+        .match-card.upcoming { border-left: 5px solid var(--primary); }
+
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+        .league-name { font-weight: bold; }
+
+        .teams-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .team-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 35%;
+        }
+        .team-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            margin-bottom: 5px;
+        }
+        .team-name { font-size: 0.8rem; font-weight: 600; text-align: center; }
+
+        .score-board {
+            text-align: center;
+            width: 30%;
+        }
+        .score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e293b;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .status-win { background: #d1fae5; color: var(--win); }
+        .status-lose { background: #fee2e2; color: var(--lose); }
+        .status-live { background: #fee2e2; color: var(--lose); animation: pulse 1.5s infinite; }
+        .status-upcoming { background: #dbeafe; color: var(--primary); }
+
+        footer { text-align: center; padding: 20px; font-size: 0.7rem; color: #94a3b8; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <a href="dashboard.html" class="back-btn">⬅️</a>
+        <h1>Jadwal Pertandingan</h1>
+    </header>
+
+    <div class="schedule-container">
+        
+        <!-- Match 1: Sudah Dimenangkan -->
+        <div class="match-card win">
+            <div class="match-header">
+                <span class="league-name">Liga 1 - Pekan 10</span>
+                <span>12 Nov 2026</span>
+            </div>
+            <div class="teams-row">
+                <div class="team-side">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg" class="team-logo">
+                    <span class="team-name">MU</span>
+                </div>
+                <div class="score-board">
+                    <div class="score">3 - 1</div>
+                    <span class="status-badge status-win">MENANG</span>
+                </div>
+                <div class="team-side">
+                    <img src="https://upload.wikimedia.org/wikipedia/id/thumb/4/47/FC_Barcelona_%28crest%29.svg/1200px-FC_Barcelona_%28crest%29.svg.png" class="team-logo">
+                    <span class="team-name">FCB</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Match 2: Sedang Berlangsung (LIVE) -->
+        <div class="match-card upcoming">
+            <div class="match-header">
+                <span class="league-name">Piala Nasional - Babak 16</span>
+                <span>Hari Ini</span>
+            </div>
+            <div class="teams-row">
+                <div class="team-side">
+                    <img src="https://ui-avatars.com/api/?name=PSG&background=random" class="team-logo">
+                    <span class="team-name">PSG</span>
+                </div>
+                <div class="score-board">
+                    <div class="score">1 - 1</div>
+                    <span class="status-badge status-live">🔴 LIVE 75'</span>
+                </div>
+                <div class="team-side">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg" class="team-logo">
+                    <span class="team-name">MU</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Match 3: Akan Datang -->
+        <div class="match-card upcoming">
+            <div class="match-header">
+                <span class="league-name">Liga 1 - Pekan 12</span>
+                <span>Sabtu, 20:00 WIB</span>
+            </div>
+            <div class="teams-row">
+                <div class="team-side">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg" class="team-logo">
+                    <span class="team-name">MU</span>
+                </div>
+                <div class="score-board">
+                    <div class="score" style="font-size: 1rem; color: #94a3b8;">VS</div>
+                    <span class="status-badge status-upcoming">Akan Datang</span>
+                </div>
+                <div class="team-side">
+                    <img src="https://ui-avatars.com/api/?name=LIV&background=random" class="team-logo">
+                    <span class="team-name">LIV</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Match 4: Kalah -->
+        <div class="match-card lose">
+            <div class="match-header">
+                <span class="league-name">Liga 1 - Pekan 9</span>
+                <span>05 Nov 2026</span>
+            </div>
+            <div class="teams-row">
+                <div class="team-side">
+                    <img src="https://ui-avatars.com/api/?name=RMA&background=random" class="team-logo">
+                    <span class="team-name">RMA</span>
+                </div>
+                <div class="score-board">
+                    <div class="score">2 - 0</div>
+                    <span class="status-badge status-lose">KALAH</span>
+                </div>
+                <div class="team-side">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg" class="team-logo">
+                    <span class="team-name">MU</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        &copy; 2026 Ultra Manager Project
+    </footer>
+
+</body>
+</html>
