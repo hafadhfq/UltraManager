@@ -11,6 +11,7 @@
             --card: #ffffff;
             --text: #334155;
             --border: #e2e8f0;
+            --accent: #ef4444; /* Merah untuk VS */
         }
 
         body {
@@ -18,7 +19,7 @@
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
-            padding-bottom: 80px; /* Ruang untuk footer */
+            padding-bottom: 80px;
             font-size: 13px;
         }
 
@@ -38,12 +39,50 @@
         .user-info span { font-size: 0.75rem; color: #64748b; }
         .club-logo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
 
+        /* --- NEXT MATCH SECTION --- */
+        .next-match {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: white;
+            margin: 15px;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .match-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-bottom: 15px; }
+        
+        .teams-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        .team { display: flex; flex-direction: column; align-items: center; width: 80px; }
+        .team img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; }
+        .team-name { font-size: 0.8rem; font-weight: bold; }
+        
+        .vs-badge {
+            background: var(--accent);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+        
+        .match-time {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
         /* --- GRID MENU 12 FITUR --- */
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 Kolom */
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            padding: 15px;
+            padding: 0 15px;
         }
         .menu-item {
             background: var(--card);
@@ -94,7 +133,6 @@
             font-weight: bold;
         }
 
-        /* --- FOOTER --- */
         footer {
             text-align: center;
             padding: 20px;
@@ -118,6 +156,27 @@
         </div>
         <img src="https://cdn-icons-png.flaticon.com/512/53/53283.png" alt="Logo" class="club-logo">
     </header>
+
+    <!-- Next Match Section -->
+    <div class="next-match">
+        <div class="match-label">Pertandingan Selanjutnya</div>
+        <div class="teams-container">
+            <div class="team">
+                <!-- Logo Tim Sendiri -->
+                <img src="https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg" alt="Home">
+                <span class="team-name">MU</span>
+            </div>
+            
+            <div class="vs-badge">VS</div>
+            
+            <div class="team">
+                <!-- Logo Tim Lawan -->
+                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/56/Real_Madrid_CF.svg/1200px-Real_Madrid_CF.svg.png" alt="Away">
+                <span class="team-name">RM</span>
+            </div>
+        </div>
+        <div class="match-time">⏰ Sabtu, 20:00 WIB</div>
+    </div>
 
     <!-- 12 Fitur Menu Grid -->
     <div class="grid-container">
@@ -166,12 +225,12 @@
             if (input.value.trim() !== "") {
                 const newBubble = document.createElement('div');
                 newBubble.className = 'chat-bubble';
-                newBubble.style.background = '#dbeafe'; // Warna beda untuk chat sendiri
+                newBubble.style.background = '#dbeafe'; 
                 newBubble.innerHTML = `<strong>Kamu:</strong> ${input.value}`;
                 
                 list.appendChild(newBubble);
                 input.value = "";
-                list.scrollTop = list.scrollHeight; // Auto scroll ke bawah
+                list.scrollTop = list.scrollHeight;
             }
         }
     </script>
