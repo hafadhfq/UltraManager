@@ -3,305 +3,382 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultra Manager - Match Engine</title>
+    <title>Ultra Manager - Live Match v2</title>
     <style>
         :root {
             --primary: #2563eb;
-            --bg: #f1f5f9;
+            --bg: #f8fafc;
             --card: #ffffff;
-            --text: #334155;
+            --text: #1e293b;
             --border: #e2e8f0;
-            --home-color: #3b82f6;
-            --away-color: #ef4444;
+            --home: #10b981; /* Hijau */
+            --away: #3b82f6; /* Biru */
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden; /* Mencegah scroll body utama */
         }
 
-        /* --- HEADER --- */
+        /* --- HEADER & SCOREBOARD --- */
         header {
+            background: linear-gradient(to bottom, #1e293b, #0f172a);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 50;
+        }
+        .score-row { display: flex; justify-content: space-between; align-items: center; max-width: 300px; margin: 0 auto; }
+        .team { font-weight: bold; font-size: 0.9rem; width: 30%; }
+        .score { font-size: 2rem; font-weight: 800; }
+        .timer { font-family: monospace; color: #4ade80; font-size: 0.9rem; margin-top: 5px; }
+
+        /* --- TOGGLE STATS BUTTON --- */
+        .stats-toggle-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+        .stats-toggle-btn:hover { background: rgba(255,255,255,0.2); }
+
+        /* --- STATISTICS PANEL (Hidden by default) --- */
+        #statsPanel {
             background: white;
             padding: 15px;
+            border-bottom: 1px solid var(--border);
+            display: none; /* Hidden initially */
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .stat-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .back-btn { text-decoration: none; font-size: 1.2rem; cursor: pointer; color: var(--text); }
-        .match-status { font-weight: bold; color: var(--primary); font-size: 0.9rem; }
-
-        /* --- SCOREBOARD --- */
-        .scoreboard {
-            background: linear-gradient(to right, #1e293b, #0f172a);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        .teams-row { display: flex; justify-content: space-between; align-items: center; max-width: 400px; margin: 0 auto; }
-        .team-name { font-weight: bold; font-size: 1rem; width: 35%; }
-        .score-display { font-size: 2.5rem; font-weight: 800; letter-spacing: 3px; }
-        .timer-display { margin-top: 10px; font-family: monospace; font-size: 1.1rem; color: #4ade80; }
-
-        /* --- STATS BAR --- */
-        .stats-container {
-            background: white;
-            padding: 10px 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
+            margin-bottom: 12px;
             font-size: 0.8rem;
         }
-        .stat-item { text-align: center; }
-        .stat-val { font-weight: bold; display: block; font-size: 1rem; }
+        .stat-val { width: 40px; font-weight: bold; text-align: center; }
+        .stat-name { flex: 1; text-align: center; color: #64748b; font-size: 0.75rem; }
+        
+        .bar-container { flex: 2; height: 6px; background: #f1f5f9; border-radius: 3px; margin: 0 10px; position: relative; display: flex; overflow: hidden; }
+        .bar-home { background: var(--home); height: 100%; transition: width 0.5s; }
+        .bar-away { background: var(--away); height: 100%; transition: width 0.5s; margin-left: auto; }
 
-        /* --- MATCH LOG (AREA UTAMA) --- */
-        .match-log-container {
+        /* --- COMMENTARY LOG (Scrollable Area) --- */
+        .log-container {
             flex: 1;
             padding: 15px;
             overflow-y: auto;
-            scroll-behavior: smooth;
+            background: var(--bg);
+            /* Batasi tinggi visual agar hanya ~5 baris terlihat jelas sebelum scroll */
+            display: flex;
+            flex-direction: column-reverse; /* Item baru di atas */
         }
-        .log-entry {
+
+        .log-item {
             background: white;
-            padding: 12px;
-            margin-bottom: 10px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
             border-radius: 8px;
-            border-left: 4px solid transparent;
+            border-left: 4px solid #cbd5e1;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            animation: fadeIn 0.5s ease;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            animation: fadeIn 0.4s ease;
         }
         
-        /* Tipe Event Log */
-        .log-neutral { border-left-color: #cbd5e1; }
-        .log-home-attack { border-left-color: var(--home-color); background: #eff6ff; }
-        .log-away-attack { border-left-color: var(--away-color); background: #fef2f2; }
-        .log-goal { 
-            border-left-color: #f59e0b; 
-            background: #fffbeb; 
-            border: 1px solid #fcd34d;
-        }
-        .log-card { border-left-color: #ef4444; }
-        .log-sub { border-left-color: #3b82f6; }
+        /* Event Colors */
+        .log-goal { border-left-color: #f59e0b; background: #fffbeb; }
+        .log-chance { border-left-color: #8b5cf6; background: #f5f3ff; }
+        .log-card { border-left-color: #ef4444; background: #fef2f2; }
+        .log-corner { border-left-color: #3b82f6; background: #eff6ff; }
 
-        .log-time { font-weight: bold; font-size: 0.75rem; color: #64748b; margin-bottom: 4px; display: block; }
-        .log-text { font-size: 0.9rem; line-height: 1.4; }
-        .log-icon { margin-right: 6px; }
+        .log-time { font-weight: bold; color: #64748b; margin-right: 8px; font-size: 0.75rem; }
 
-        /* --- FOOTER --- */
+        /* --- FOOTER CONTROLS --- */
         footer {
             background: white;
-            padding: 15px;
-            text-align: center;
+            padding: 10px;
             border-top: 1px solid var(--border);
-            font-size: 0.75rem;
-            color: #94a3b8;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
         }
-        .control-panel {
-            display: flex; gap: 10px; justify-content: center; margin-bottom: 10px;
-        }
-        .btn-control {
-            padding: 8px 16px; border: none; border-radius: 6px;
-            font-weight: bold; cursor: pointer; font-size: 0.8rem;
-        }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.8rem; }
         .btn-pause { background: #f1f5f9; color: var(--text); }
-        .btn-speed { background: var(--primary); color: white; }
+        .btn-resume { background: var(--primary); color: white; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <!-- Header -->
     <header>
-        <a href="dashboard.html" class="back-btn">⬅️</a>
-        <div class="match-status">LIGA 1 • PEKAN 12</div>
+        <div class="score-row">
+            <div class="team">FC Ultra</div>
+            <div class="score" id="scoreDisplay">0 - 0</div>
+            <div class="team">Real Madrid</div>
+        </div>
+        <div class="timer" id="timerDisplay">00'</div>
+        <button class="stats-toggle-btn" onclick="toggleStats()">📊 Tampilkan Statistik</button>
     </header>
 
-    <!-- Scoreboard -->
-    <div class="scoreboard">
-        <div class="teams-row">
-            <div class="team-name" style="text-align: right;">FC Ultra Utd</div>
-            <div class="score-display" id="scoreBoard">0 - 0</div>
-            <div class="team-name" style="text-align: left;">Real Madrid</div>
+    <!-- Panel Statistik (Toggle) -->
+    <div id="statsPanel">
+        <!-- Baris 1: Penguasaan Bola -->
+        <div class="stat-row">
+            <div class="stat-val" id="s_poss_h">50%</div>
+            <div class="bar-container">
+                <div class="bar-home" id="bar_poss_h" style="width: 50%"></div>
+                <div class="bar-away" id="bar_poss_a" style="width: 50%"></div>
+            </div>
+            <div class="stat-val" id="s_poss_a">50%</div>
+            <div class="stat-name" style="position:absolute; width:100%; text-align:center; color:white; font-weight:bold; text-shadow:0 1px 2px black;">Penguasaan Bola</div>
         </div>
-        <div class="timer-display" id="gameTimer">00'</div>
+
+        <!-- Baris 2: Ekspektasi Gol (xG) -->
+        <div class="stat-row">
+            <div class="stat-val" id="s_xg_h">0.00</div>
+            <div class="bar-container">
+                <div class="bar-home" id="bar_xg_h" style="width: 50%"></div>
+                <div class="bar-away" id="bar_xg_a" style="width: 50%"></div>
+            </div>
+            <div class="stat-val" id="s_xg_a">0.00</div>
+            <div class="stat-name">Ekspektasi Gol (xG)</div>
+        </div>
+
+        <!-- Baris 3: Total Tembakan -->
+        <div class="stat-row">
+            <div class="stat-val" id="s_shot_h">0</div>
+            <div class="bar-container">
+                <div class="bar-home" id="bar_shot_h" style="width: 50%"></div>
+                <div class="bar-away" id="bar_shot_a" style="width: 50%"></div>
+            </div>
+            <div class="stat-val" id="s_shot_a">0</div>
+            <div class="stat-name">Total Tembakan</div>
+        </div>
+
+        <!-- Baris 4: Peluang Emas -->
+        <div class="stat-row">
+            <div class="stat-val" id="s_big_h">0</div>
+            <div class="bar-container">
+                <div class="bar-home" id="bar_big_h" style="width: 50%"></div>
+                <div class="bar-away" id="bar_big_a" style="width: 50%"></div>
+            </div>
+            <div class="stat-val" id="s_big_a">0</div>
+            <div class="stat-name">Peluang Emas</div>
+        </div>
+
+        <!-- Baris 5: Tendangan Sudut -->
+        <div class="stat-row">
+            <div class="stat-val" id="s_cor_h">0</div>
+            <div class="bar-container">
+                <div class="bar-home" id="bar_cor_h" style="width: 50%"></div>
+                <div class="bar-away" id="bar_cor_a" style="width: 50%"></div>
+            </div>
+            <div class="stat-val" id="s_cor_a">0</div>
+            <div class="stat-name">Tendangan Sudut</div>
+        </div>
     </div>
 
-    <!-- Live Stats -->
-    <div class="stats-container">
-        <div class="stat-item"><span class="stat-val" id="statPossession">50%</span>Possession</div>
-        <div class="stat-item"><span class="stat-val" id="statShots">0</span>Shots</div>
-        <div class="stat-item"><span class="stat-val" id="statDanger">Netral</span>Momentum</div>
-    </div>
-
-    <!-- Match Log -->
-    <div class="match-log-container" id="matchLog">
-        <!-- Logs will appear here -->
+    <!-- Area Komentar (Scrollable) -->
+    <div class="log-container" id="logBox">
+        <div class="log-item">
+            <span class="log-time">00'</span> 🏁 Pertandingan dimulai! Wasit meniup peluit awal.
+        </div>
     </div>
 
     <!-- Footer Controls -->
     <footer>
-        <div class="control-panel">
-            <button class="btn-control btn-pause" onclick="togglePause()">⏯️ Pause/Play</button>
-            <button class="btn-control btn-speed" onclick="changeSpeed()">⚡ Speed: 1x</button>
-        </div>
-        &copy; 2026 Ultra Manager Engine v3.0
+        <button class="btn btn-pause" onclick="togglePause()" id="btnPause">⏸️ Pause</button>
+        <button class="btn btn-resume" onclick="togglePause()" id="btnResume" style="display:none;">▶️ Lanjut</button>
     </footer>
 
     <script>
-        // --- KONFIGURASI TIM ---
-        const homeTeam = { name: "FC Ultra Utd", att: 85, mid: 82, def: 78, color: "home" };
-        const awayTeam = { name: "Real Madrid", att: 88, mid: 86, def: 84, color: "away" };
-
         // --- STATE GAME ---
         let minute = 0;
-        let scoreH = 0;
-        let scoreA = 0;
+        let scoreH = 0, scoreA = 0;
         let isPaused = false;
-        let speed = 1000; // ms per minute
-        let possession = "home"; // who has the ball
-        let momentum = 50; // 0-100, >50 home advantage
+        let momentum = 50; // 0-100 (Home advantage)
         
-        // Stats
-        let shotsH = 0;
-        let shotsA = 0;
-        let possCountH = 0;
-        let possCountA = 0;
-
-        // Database Komentar
-        const comments = {
-            neutral: ["Pertandingan berlangsung ketat di tengah lapangan.", "Wasit memimpin jalannya pertandingan dengan baik.", "Kedua tim saling mencari celah."],
-            homeAttack: ["FC Ultra United membangun serangan dari sayap kiri.", "Umpan terobosan indah dari gelandang FC Ultra!", "Tekanan tinggi dari tuan rumah membuat lawan gugup."],
-            awayAttack: ["Real Madrid menguasai bola dengan sabar.", "Konter cepat berbahaya dari Los Blancos!", "Vinicius Jr mencoba melewati bek lawan."],
-            goal: ["GOLLL!! Sundulan keras tak tertahan!", "Masuk! Sepakan kaki kanan yang sempurna!", "Jaring bergoyang! Gol yang sangat indah!"],
-            card: ["Wasit mengeluarkan kartu kuning untuk pelanggaran keras.", "Protes pemain kepada wasit diabaikan."]
+        // Stats Data
+        let stats = {
+            possH: 50, possA: 50,
+            xGH: 0.0, xGA: 0.0,
+            shotH: 0, shotA: 0,
+            bigH: 0, bigA: 0,
+            corH: 0, corA: 0
         };
 
         // --- ENGINE UTAMA ---
         function startMatch() {
-            addLog(0, "neutral", "🏁 Peluit awal dibunyikan! Pertandingan dimulai.");
-            
             setInterval(() => {
                 if (!isPaused && minute < 90) {
                     minute++;
-                    updateTimer();
+                    document.getElementById('timerDisplay').innerText = minute + "'";
                     processMinute();
                 } else if (minute === 90) {
-                    addLog(90, "neutral", "🏁 Wasit meniup peluit panjang. Pertandingan Selesai!");
+                    addLog(90, "neutral", " Pertandingan Selesai!");
                     isPaused = true;
+                    updateButtons();
                 }
-            }, speed);
+            }, 1500); // Kecepatan simulasi (1.5 detik = 1 menit)
         }
 
         function processMinute() {
             // 1. Update Momentum (Random Walk)
-            let shift = Math.floor(Math.random() * 10) - 5;
-            momentum += shift;
-            if (momentum > 90) momentum = 90;
-            if (momentum < 10) momentum = 10;
+            momentum += (Math.random() * 10 - 5);
+            if (momentum > 95) momentum = 95;
+            if (momentum < 5) momentum = 5;
 
-            // 2. Tentukan Penguasaan Bola
-            possession = momentum > 50 ? "home" : "away";
-            if (possession === "home") possCountH++; else possCountA++;
+            // 2. Update Penguasaan Bola
+            if (momentum > 50) stats.possH++; else stats.possA++;
 
-            // 3. Cek Event (Gol, Peluang, Kartu)
-            let eventRoll = Math.random() * 100;
-            
-            // Logic Gol: Jika momentum tinggi DAN roll angka kecil (rare)
-            if ((momentum > 75 && eventRoll < 5) || (momentum < 25 && eventRoll < 3)) {
+            // 3. Tentukan Event (Hanya event KRUSIAL yang memicu log)
+            let roll = Math.random() * 100;
+
+            // GOL (Sangat Jarang)
+            if ((momentum > 80 && roll < 3) || (momentum < 20 && roll < 2)) {
                 triggerGoal();
-            } 
-            // Logic Peluang (Shots)
-            else if (eventRoll < 15) {
-                triggerChance();
             }
-            // Logic Kartu (Rare)
-            else if (eventRoll > 98) {
+            // PELUANG EMAS / BIG CHANCE (Jarang)
+            else if ((momentum > 70 && roll < 8) || (momentum < 30 && roll < 6)) {
+                triggerBigChance();
+            }
+            // CORNER KICK (Agak Sering)
+            else if (roll < 12) {
+                triggerCorner();
+            }
+            // KARTU / FOUL (Jarang)
+            else if (roll > 97) {
                 triggerCard();
             }
-            // Normal Play
-            else {
-                triggerCommentary();
-            }
-
-            updateStats();
+            // Jika tidak ada event krusial, JANGAN tambah log (sesuai request)
+            
+            updateStatsUI();
         }
 
+        // --- EVENT TRIGGERS ---
         function triggerGoal() {
             if (momentum > 50) {
                 scoreH++;
-                addLog(minute, "goal", `⚽ GOL!! ${homeTeam.name} mencetak gol! Skor menjadi ${scoreH}-${scoreA}`);
+                stats.xGH += 0.75;
+                addLog(minute, "goal", `⚽ GOLLL!! FC Ultra mencetak gol indah! Skor ${scoreH}-${scoreA}`);
             } else {
                 scoreA++;
-                addLog(minute, "goal", `⚽ GOL!! ${awayTeam.name} menyamakan/memimpin! Skor menjadi ${scoreH}-${scoreA}`);
+                stats.xGA += 0.75;
+                addLog(minute, "goal", `⚽ GOLLL!! Real Madrid membalas keadaan! Skor ${scoreH}-${scoreA}`);
             }
-            document.getElementById('scoreBoard').innerText = `${scoreH} - ${scoreA}`;
-            momentum = 50; // Reset momentum after goal
+            document.getElementById('scoreDisplay').innerText = `${scoreH} - ${scoreA}`;
+            momentum = 50; // Reset setelah gol
         }
 
-        function triggerChance() {
-            let teamName = momentum > 50 ? homeTeam.name : awayTeam.name;
-            let type = momentum > 50 ? "home-attack" : "away-attack";
-            if (momentum > 50) shotsH++; else shotsA++;
-            
-            addLog(minute, type, `🔥 Peluang! ${teamName} hampir saja mencetak gol, tapi masih melambung.`);
+        function triggerBigChance() {
+            if (momentum > 50) {
+                stats.shotH++; stats.bigH++; stats.xGH += 0.45;
+                addLog(minute, "chance", "🔥 Peluang Emas! Tembakan keras FC Ultra masih membentur tiang!");
+            } else {
+                stats.shotA++; stats.bigA++; stats.xGA += 0.45;
+                addLog(minute, "chance", "🔥 Peluang Emas! Vinicius Jr lolos tapi tendangannya melambung!");
+            }
+        }
+
+        function triggerCorner() {
+            if (momentum > 50) {
+                stats.corH++;
+                addLog(minute, "corner", "🚩 Corner kick untuk FC Ultra United.");
+            } else {
+                stats.corA++;
+                addLog(minute, "corner", "🚩 Corner kick untuk Real Madrid.");
+            }
         }
 
         function triggerCard() {
-            addLog(minute, "card", "🟨 Kartu Kuning! Wasit menegur pemain karena protes.");
-        }
-
-        function triggerCommentary() {
-            let type = "neutral";
-            let textArr = comments.neutral;
-            
-            if (momentum > 60) { type = "home-attack"; textArr = comments.homeAttack; }
-            else if (momentum < 40) { type = "away-attack"; textArr = comments.awayAttack; }
-
-            let randomText = textArr[Math.floor(Math.random() * textArr.length)];
-            addLog(minute, type, randomText);
+            addLog(minute, "card", "🟨 Kartu Kuning! Wasit menegur pemain karena pelanggaran telat.");
         }
 
         // --- UTILITIES ---
         function addLog(time, type, text) {
-            const logBox = document.getElementById('matchLog');
+            const box = document.getElementById('logBox');
             const div = document.createElement('div');
-            div.className = `log-entry log-${type}`;
-            div.innerHTML = `<span class="log-time">${time}'</span><span class="log-text">${text}</span>`;
-            logBox.prepend(div); // Add to top
-        }
-
-        function updateTimer() {
-            document.getElementById('gameTimer').innerText = minute + "'";
-        }
-
-        function updateStats() {
-            let total = possCountH + possCountA;
-            let pH = total === 0 ? 50 : Math.round((possCountH / total) * 100);
-            document.getElementById('statPossession').innerText = pH + "%";
-            document.getElementById('statShots').innerText = shotsH + " (" + shotsA + ")";
+            div.className = `log-item log-${type}`;
+            div.innerHTML = `<span class="log-time">${time}'</span> ${text}`;
+            box.prepend(div); // Tambah ke atas
             
-            let momText = "Netral";
-            if (momentum > 60) momText = "Dominasi Home";
-            if (momentum < 40) momText = "Dominasi Away";
-            document.getElementById('statDanger').innerText = momText;
+            // Optional: Hapus log lama jika terlalu banyak (>50 item)
+            if (box.children.length > 50) box.lastChild.remove();
         }
 
-        function togglePause() { isPaused = !isPaused; }
-        function changeSpeed() { 
-            speed = speed === 1000 ? 200 : 1000; 
-            document.querySelector('.btn-speed').innerText = speed === 200 ? "⚡ Speed: 5x" : "⚡ Speed: 1x";
+        function toggleStats() {
+            const panel = document.getElementById('statsPanel');
+            const btn = document.querySelector('.stats-toggle-btn');
+            if (panel.style.display === 'none' || panel.style.display === '') {
+                panel.style.display = 'block';
+                btn.innerText = "🙈 Sembunyikan Statistik";
+            } else {
+                panel.style.display = 'none';
+                btn.innerText = "📊 Tampilkan Statistik";
+            }
+        }
+
+        function updateStatsUI() {
+            // Hitung Persentase
+            let totalPoss = stats.possH + stats.possA;
+            let pH = totalPoss === 0 ? 50 : Math.round((stats.possH / totalPoss) * 100);
+            let pA = 100 - pH;
+
+            let totalXG = stats.xGH + stats.xGA;
+            let xGH_pct = totalXG === 0 ? 50 : (stats.xGH / totalXG) * 100;
+            
+            let totalShot = stats.shotH + stats.shotA;
+            let sH_pct = totalShot === 0 ? 50 : (stats.shotH / totalShot) * 100;
+
+            // Update Text
+            document.getElementById('s_poss_h').innerText = pH + "%";
+            document.getElementById('s_poss_a').innerText = pA + "%";
+            document.getElementById('bar_poss_h').style.width = pH + "%";
+            document.getElementById('bar_poss_a').style.width = pA + "%";
+
+            document.getElementById('s_xg_h').innerText = stats.xGH.toFixed(2);
+            document.getElementById('s_xg_a').innerText = stats.xGA.toFixed(2);
+            document.getElementById('bar_xg_h').style.width = xGH_pct + "%";
+            document.getElementById('bar_xg_a').style.width = (100-xGH_pct) + "%";
+
+            document.getElementById('s_shot_h').innerText = stats.shotH;
+            document.getElementById('s_shot_a').innerText = stats.shotA;
+            document.getElementById('bar_shot_h').style.width = sH_pct + "%";
+            document.getElementById('bar_shot_a').style.width = (100-sH_pct) + "%";
+
+            document.getElementById('s_big_h').innerText = stats.bigH;
+            document.getElementById('s_big_a').innerText = stats.bigA;
+            // Logic bar big chance similar to shots...
+            
+            document.getElementById('s_cor_h').innerText = stats.corH;
+            document.getElementById('s_cor_a').innerText = stats.corA;
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            updateButtons();
+        }
+
+        function updateButtons() {
+            document.getElementById('btnPause').style.display = isPaused ? 'none' : 'inline-block';
+            document.getElementById('btnResume').style.display = isPaused ? 'inline-block' : 'none';
         }
 
         // Start Game on Load
