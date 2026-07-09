@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra Manager - Live Match</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #334155;
+            --border: #e2e8f0;
+            --grass: #10b981;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding-bottom: 20px;
+            font-size: 13px;
+        }
+
+        /* --- HEADER SCOREBOARD --- */
+        .scoreboard {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .match-info { font-size: 0.8rem; opacity: 0.8; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .live-badge { background: #ef4444; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.6rem; animation: blink 1.5s infinite; }
+        
+        .teams-display { display: flex; justify-content: space-between; align-items: center; max-width: 300px; margin: 0 auto; }
+        .team-name { font-weight: bold; font-size: 0.9rem; width: 35%; }
+        .score-box { font-size: 2rem; font-weight: bold; width: 30%; letter-spacing: 2px; }
+        .team-home { text-align: right; }
+        .team-away { text-align: left; }
+
+        /* --- MATCH LOG / COMMENTARY --- */
+        .match-log {
+            padding: 15px;
+            display: flex;
+            flex-direction: column-reverse; /* Agar komentar baru selalu di atas */
+            gap: 10px;
+        }
+
+        .log-item {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .log-time {
+            font-weight: bold;
+            color: var(--primary);
+            width: 35px;
+            font-size: 0.8rem;
+            padding-top: 2px;
+        }
+
+        .log-content { flex: 1; }
+        .log-text { margin: 0; line-height: 1.4; }
+        .log-icon { margin-right: 5px; }
+
+        /* --- EVENT TYPES --- */
+        .goal-event { border-left: 4px solid #f59e0b; background: #fffbeb; }
+        .card-event { border-left: 4px solid #ef4444; }
+        .sub-event { border-left: 4px solid #3b82f6; }
+
+        @keyframes blink { 50% { opacity: 0.5; } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        footer { text-align: center; padding: 20px; font-size: 0.7rem; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+    <!-- Scoreboard Sticky -->
+    <div class="scoreboard">
+        <div class="match-info">
+            <span class="live-badge">LIVE</span>
+            <span>Pekan 12 • Ultra Arena</span>
+        </div>
+        <div class="teams-display">
+            <div class="team-name team-home">FC Ultra Utd</div>
+            <div class="score-box" id="score">1 - 0</div>
+            <div class="team-name team-away">Real Madrid</div>
+        </div>
+        <div style="font-size: 0.7rem; margin-top: 5px; color: #4ade80;" id="timer">42'</div>
+    </div>
+
+    <!-- Area Komentar Teks -->
+    <div class="match-log" id="commentaryBox">
+        
+        <!-- Komentar akan muncul di sini via JS -->
+        <div class="log-item goal-event">
+            <div class="log-time">41'</div>
+            <div class="log-content">
+                <p class="log-text"><span class="log-icon">⚽</span><b>GOLLL!!</b> Haaland mencetak gol sundulan indah dari umpan silang Foden! FC Ultra United memimpin!</p>
+            </div>
+        </div>
+
+        <div class="log-item">
+            <div class="log-time">38'</div>
+            <div class="log-content">
+                <p class="log-text">Peluang besar untuk Real Madrid! Tembakan Vinicius Jr masih melambung tipis di atas mistar.</p>
+            </div>
+        </div>
+
+        <div class="log-item card-event">
+            <div class="log-time">25'</div>
+            <div class="log-content">
+                <p class="log-text"><span class="log-icon">🟨</span> Kartu kuning untuk Rodri karena pelanggaran keras di tengah lapangan.</p>
+            </div>
+        </div>
+
+        <div class="log-item">
+            <div class="log-time">12'</div>
+            <div class="log-content">
+                <p class="log-text">Pertandingan mulai terbuka. Kedua tim saling menyerang dengan cepat.</p>
+            </div>
+        </div>
+
+        <div class="log-item">
+            <div class="log-time">1'</div>
+            <div class="log-content">
+                <p class="log-text">🏁 Wasit meniup peluit awal pertandingan!</p>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        &copy; 2026 Ultra Manager Project
+    </footer>
+
+    <script>
+        // Simulasi Update Pertandingan Sederhana
+        let minute = 42;
+        const timerEl = document.getElementById('timer');
+        
+        setInterval(() => {
+            if(minute < 90) {
+                minute++;
+                timerEl.innerText = minute + "'";
+                
+                // Contoh simulasi komentar acak (bisa dikembangkan lebih lanjut)
+                if(Math.random() > 0.8) {
+                    addCommentary(minute, "Permainan sedikit terhenti karena bola keluar lapangan.");
+                }
+            } else {
+                timerEl.innerText = "FT";
+                timerEl.style.color = "#f59e0b";
+            }
+        }, 3000); // Update setiap 3 detik
+
+        function addCommentary(time, text) {
+            const box = document.getElementById('commentaryBox');
+            const newItem = document.createElement('div');
+            newItem.className = 'log-item';
+            newItem.innerHTML = `
+                <div class="log-time">${time}'</div>
+                <div class="log-content"><p class="log-text">${text}</p></div>
+            `;
+            box.prepend(newItem); // Tambahkan ke paling atas
+        }
+    </script>
+
+</body>
+</html>
