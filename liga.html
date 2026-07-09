@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra Manager - Klasemen Liga</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #334155;
+            --border: #e2e8f0;
+            --ucl: #3b82f6; /* Biru untuk zona Liga Champions */
+            --uel: #f97316; /* Oranye untuk Europa */
+            --rel: #ef4444; /* Merah untuk Degradasi */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding-bottom: 20px;
+            font-size: 13px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .back-btn { text-decoration: none; font-size: 1.2rem; color: var(--text); cursor: pointer; }
+        h1 { margin: 0; font-size: 1.1rem; flex: 1; }
+        .season-badge { font-size: 0.7rem; background: #f1f5f9; padding: 4px 8px; border-radius: 4px; }
+
+        /* --- TABEL KLASEMEN --- */
+        .table-container {
+            background: white;
+            margin: 15px;
+            border-radius: 12px;
+            overflow: hidden; /* Agar rounded corner tetap ada saat scroll */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            overflow-x: auto; /* Scroll horizontal jika layar kecil */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 350px; /* Lebar minimum agar tidak terlalu gepeng */
+        }
+
+        th {
+            background: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 10px;
+            font-size: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        
+        /* Highlight Tim Sendiri */
+        tr.my-team { background-color: #eff6ff; border-left: 3px solid var(--primary); }
+        tr.my-team td { font-weight: bold; color: var(--primary); }
+
+        /* Kolom Posisi & Logo */
+        .pos-col { width: 30px; text-align: center; font-weight: bold; }
+        .team-col { display: flex; align-items: center; gap: 8px; }
+        .team-logo-sm { width: 24px; height: 24px; object-fit: contain; }
+        
+        /* Indikator Zona (Garis Kiri) */
+        .zone-ucl { border-left: 3px solid var(--ucl); }
+        .zone-rel { border-left: 3px solid var(--rel); }
+
+        /* Form Terakhir (W/D/L) */
+        .form-cell { display: flex; gap: 2px; }
+        .form-box {
+            width: 18px; height: 18px;
+            border-radius: 3px;
+            font-size: 0.6rem;
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-weight: bold;
+        }
+        .w { background: var(--ucl); } /* Win */
+        .d { background: #94a3b8; }    /* Draw */
+        .l { background: var(--rel); } /* Lose */
+
+        .pts-col { font-weight: bold; text-align: center; }
+
+        footer { text-align: center; padding: 20px; font-size: 0.7rem; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <a href="dashboard.html" class="back-btn">⬅️</a>
+        <h1>Klasemen Liga 1</h1>
+        <span class="season-badge">2026/2027</span>
+    </header>
+
+    <!-- Tabel Klasemen -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="pos-col">#</th>
+                    <th>Tim</th>
+                    <th style="text-align:center">Main</th>
+                    <th style="text-align:center">SG</th>
+                    <th style="text-align:center">Poin</th>
+                    <th>Form</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Juara Sementara -->
+                <tr class="zone-ucl">
+                    <td class="pos-col">1</td>
+                    <td>
+                        <div class="team-col">
+                            <img src="https://ui-avatars.com/api/?name=LIV&background=random" class="team-logo-sm">
+                            <span>Liverpool</span>
+                        </div>
+                    </td>
+                    <td style="text-align:center">12</td>
+                    <td style="text-align:center">+18</td>
+                    <td class="pts-col">32</td>
+                    <td>
+                        <div class="form-cell">
+                            <div class="form-box w">W</div>
+                            <div class="form-box w">W</div>
+                            <div class="form-box d">D</div>
+                            <div class="form-box w">W</div>
+                            <div class="form-box w">W</div>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Tim Kamu (Highlight) -->
+                <tr class="my-team zone-ucl">
+                    <td class="pos-col">2</td>
+                    <td>
+                        <div class="team-col">
+                            <img src="https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg" class="team-logo-sm">
+                            <span>FC Ultra United</span>
+                        </div>
+                    </td>
+                    <td style="text-align:center">12</td>
+                    <td style="text-align:center">+15</td>
+                    <td class="pts-col">29</td>
+                    <td>
+                        <div class="form-cell">
+                            <div class="form-box w">W</div>
+                            <div class="form-box l">L</div>
+                            <div class="form-box w">W</div>
+                            <div class="form-box w">W</div>
+                            <div class="form-box d">D</div>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Tim Tengah -->
+                <tr class="zone-ucl">
+                    <td class="pos-col">3</td>
+                    <td>
+                        <div class="team-col">
+                            <img src="https://ui-avatars.com/api/?name=ARS&background=random" class="team-logo-sm">
+                            <span>Arsenal</span>
+                        </div>
+                    </td>
+                    <td style="text-align:center">12</td>
+                    <td style="text-align:center">+12</td>
+                    <td class="pts-col">27</td>
+                    <td>
+                        <div class="form-cell">
+                            <div class="form-box d">D</div>
+                            <div class="form-box w">W</div>
+                            <div class="form-box w">W</div>
+                            <div class="form-box l">L</div>
+                            <div class="form-box w">W</div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="pos-col">4</td>
+                    <td>
+                        <div class="team-col">
+                            <img src="https://ui-avatars.com/api/?name=TOT&background=random" class="team-logo-sm">
+                            <span>Tottenham</span>
+                        </div>
+                    </td>
+                    <td style="text-align:center">12</td>
+                    <td style="text-align:center">+5</td>
+                    <td class="pts-col">23</td>
+                    <td>
+                        <div class="form-cell">
+                            <div class="form-box l">L</div>
+                            <div class="form-box w">W</div>
+                            <div class="form-box d">D</div>
+                            <div class="form-box w">W</div>
+                            <div class="form-box l">L</div>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Tim Bawah (Zona Degradasi) -->
+                <tr class="zone-rel">
+                    <td class="pos-col">18</td>
+                    <td>
+                        <div class="team-col">
+                            <img src="https://ui-avatars.com/api/?name=SOU&background=random" class="team-logo-sm">
+                            <span>Southampton</span>
+                        </div>
+                    </td>
+                    <td style="text-align:center">12</td>
+                    <td style="text-align:center">-10</td>
+                    <td class="pts-col">8</td>
+                    <td>
+                        <div class="form-cell">
+                            <div class="form-box l">L</div>
+                            <div class="form-box l">L</div>
+                            <div class="form-box l">L</div>
+                            <div class="form-box d">D</div>
+                            <div class="form-box l">L</div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        &copy; 2026 Ultra Manager Project
+    </footer>
+
+</body>
+</html>
