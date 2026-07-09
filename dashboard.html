@@ -11,7 +11,7 @@
             --card: #ffffff;
             --text: #334155;
             --border: #e2e8f0;
-            --accent: #ef4444; /* Merah untuk VS */
+            --accent: #ef4444;
         }
 
         body {
@@ -92,8 +92,11 @@
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
             cursor: pointer;
             transition: 0.2s;
+            text-decoration: none; /* Agar link tidak bergaris bawah */
+            color: var(--text);
+            display: block;
         }
-        .menu-item:active { transform: scale(0.95); background: #f8fafc; }
+        .menu-item:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .icon { font-size: 1.5rem; display: block; margin-bottom: 5px; }
         .label { font-weight: 600; font-size: 0.75rem; }
 
@@ -170,28 +173,28 @@
             <div class="vs-badge">VS</div>
             
             <div class="team">
-                <!-- Logo Tim Lawan -->
-                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/56/Real_Madrid_CF.svg/1200px-Real_Madrid_CF.svg.png" alt="Away">
-                <span class="team-name">RM</span>
+                <!-- Logo Tim Lawan (Sudah Diperbaiki) -->
+                <img src="https://upload.wikimedia.org/wikipedia/id/thumb/4/47/FC_Barcelona_%28crest%29.svg/1200px-FC_Barcelona_%28crest%29.svg.png" alt="Away">
+                <span class="team-name">FCB</span>
             </div>
         </div>
         <div class="match-time">⏰ Sabtu, 20:00 WIB</div>
     </div>
 
-    <!-- 12 Fitur Menu Grid -->
+    <!-- 12 Fitur Menu Grid (Dengan Link Aktif) -->
     <div class="grid-container">
-        <div class="menu-item"><span class="icon">🏟️</span><span class="label">Stadion</span></div>
-        <div class="menu-item"><span class="icon">👥</span><span class="label">Skuad</span></div>
-        <div class="menu-item"><span class="icon">🔄</span><span class="label">Transfer</span></div>
-        <div class="menu-item"><span class="icon">📅</span><span class="label">Jadwal</span></div>
-        <div class="menu-item"><span class="icon">🏆</span><span class="label">Liga</span></div>
-        <div class="menu-item"><span class="icon">💰</span><span class="label">Keuangan</span></div>
-        <div class="menu-item"><span class="icon">🎓</span><span class="label">Akademi</span></div>
-        <div class="menu-item"><span class="icon">⚕️</span><span class="label">Medis</span></div>
-        <div class="menu-item"><span class="icon">📊</span><span class="label">Statistik</span></div>
-        <div class="menu-item"><span class="icon">📢</span><span class="label">Berita</span></div>
-        <div class="menu-item"><span class="icon">⚙️</span><span class="label">Pengaturan</span></div>
-        <div class="menu-item"><span class="icon">🎁</span><span class="label">Bonus</span></div>
+        <a href="stadion.html" class="menu-item"><span class="icon">🏟️</span><span class="label">Stadion</span></a>
+        <a href="skuad.html" class="menu-item"><span class="icon">👥</span><span class="label">Skuad</span></a>
+        <a href="transfer.html" class="menu-item"><span class="icon">🔄</span><span class="label">Transfer</span></a>
+        <a href="jadwal.html" class="menu-item"><span class="icon">📅</span><span class="label">Jadwal</span></a>
+        <a href="liga.html" class="menu-item"><span class="icon">🏆</span><span class="label">Liga</span></a>
+        <a href="keuangan.html" class="menu-item"><span class="icon">💰</span><span class="label">Keuangan</span></a>
+        <a href="akademi.html" class="menu-item"><span class="icon">🎓</span><span class="label">Akademi</span></a>
+        <a href="medis.html" class="menu-item"><span class="icon">⚕️</span><span class="label">Medis</span></a>
+        <a href="statistik.html" class="menu-item"><span class="icon">📊</span><span class="label">Statistik</span></a>
+        <a href="berita.html" class="menu-item"><span class="icon">📢</span><span class="label">Berita</span></a>
+        <a href="pengaturan.html" class="menu-item"><span class="icon">⚙️</span><span class="label">Pengaturan</span></a>
+        <a href="bonus.html" class="menu-item"><span class="icon">🎁</span><span class="label">Bonus</span></a>
     </div>
 
     <!-- Chat Antar Player -->
