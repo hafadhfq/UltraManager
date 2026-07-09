@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra Manager - Medis</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #334155;
+            --border: #e2e8f0;
+            --healthy: #10b981; /* Hijau */
+            --tired: #f59e0b;   /* Kuning */
+            --injured: #ef4444; /* Merah */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding-bottom: 20px;
+            font-size: 13px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .back-btn { text-decoration: none; font-size: 1.2rem; color: var(--text); cursor: pointer; }
+        h1 { margin: 0; font-size: 1.1rem; flex: 1; }
+
+        /* --- STAT KESEHATAN TIM --- */
+        .team-health {
+            background: white;
+            margin: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .health-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .health-val { font-weight: bold; color: var(--healthy); }
+        
+        .progress-bg {
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--healthy);
+            width: 85%; /* Contoh nilai */
+            transition: width 0.5s;
+        }
+
+        /* --- DAFTAR CEDERA --- */
+        .section-title { padding: 0 15px; margin: 20px 0 10px 0; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .injury-list { padding: 0 15px; }
+
+        .injury-card {
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 4px solid var(--injured);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .player-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .injury-info { flex: 1; }
+        .p-name { font-weight: bold; font-size: 0.9rem; }
+        .injury-type { font-size: 0.75rem; color: var(--injured); margin-bottom: 2px; }
+        .recovery-time { font-size: 0.7rem; color: #64748b; }
+
+        .btn-treat {
+            background: #fee2e2;
+            color: var(--injured);
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* --- DAFTAR PEMAIN LELAH --- */
+        .tired-list { padding: 0 15px; }
+        .tired-item {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stamina-bar {
+            width: 60px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .stamina-fill { height: 100%; background: var(--tired); }
+
+        footer { text-align: center; padding: 20px; font-size: 0.7rem; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <a href="dashboard.html" class="back-btn">⬅️</a>
+        <h1>Pusat Medis</h1>
+    </header>
+
+    <!-- Statistik Kesehatan Tim -->
+    <div class="team-health">
+        <div class="health-header">
+            <span>Kondisi Fisik Tim</span>
+            <span class="health-val">85% (Baik)</span>
+        </div>
+        <div class="progress-bg">
+            <div class="progress-fill"></div>
+        </div>
+    </div>
+
+    <!-- Pemain Cedera -->
+    <div class="section-title">🚑 Ruang Perawatan (2)</div>
+    <div class="injury-list">
+        
+        <div class="injury-card">
+            <img src="https://ui-avatars.com/api/?name=John+Stones&background=random" class="player-avatar">
+            <div class="injury-info">
+                <div class="p-name">John Stones</div>
+                <div class="injury-type">Cedera Pergelangan Kaki</div>
+                <div class="recovery-time">⏳ Pulih dalam 5 hari</div>
+            </div>
+            <button class="btn-treat" onclick="alert('Perawatan intensif dimulai!')">Obati</button>
+        </div>
+
+        <div class="injury-card">
+            <img src="https://ui-avatars.com/api/?name=Nathan+Ake&background=random" class="player-avatar">
+            <div class="injury-info">
+                <div class="p-name">Nathan Aké</div>
+                <div class="injury-type">Ketegangan Otot Hamstring</div>
+                <div class="recovery-time">⏳ Pulih dalam 12 hari</div>
+            </div>
+            <button class="btn-treat" onclick="alert('Perawatan intensif dimulai!')">Obati</button>
+        </div>
+
+    </div>
+
+    <!-- Pemain Lelah -->
+    <div class="section-title">😫 Pemain Lelah (Butuh Rotasi)</div>
+    <div class="tired-list">
+        
+        <div class="tired-item">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <img src="https://ui-avatars.com/api/?name=Rodri&background=random" style="width:30px; height:30px; border-radius:50%">
+                <span>Rodri</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:0.7rem; color:#64748b;">45%</span>
+                <div class="stamina-bar"><div class="stamina-fill" style="width: 45%"></div></div>
+            </div>
+        </div>
+
+        <div class="tired-item">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <img src="https://ui-avatars.com/api/?name=Bernardo&background=random" style="width:30px; height:30px; border-radius:50%">
+                <span>B. Silva</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:0.7rem; color:#64748b;">52%</span>
+                <div class="stamina-bar"><div class="stamina-fill" style="width: 52%"></div></div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        &copy; 2026 Ultra Manager Project
+    </footer>
+
+</body>
+</html>
