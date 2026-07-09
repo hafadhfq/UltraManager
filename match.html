@@ -3,180 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultra Manager - Match Simulation</title>
+    <title>Ultra Manager - Auto Match Sim</title>
     <style>
         :root { --home: #3b82f6; --away: #ef4444; --grass: #10b981; }
         body { font-family: sans-serif; background: #f1f5f9; margin: 0; padding-bottom: 20px; }
         
-        /* --- UI ATAS --- */
-        header { background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
-        .score-box { font-size: 1.5rem; font-weight: bold; }
-        .timer { color: #64748b; font-weight: bold; }
-
+        header { background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 100; }
+        .score-box { font-size: 1.2rem; font-weight: bold; }
+        
         /* --- LAPANGAN --- */
         .pitch {
-            width: 90%; max-width: 400px; height: 550px;
+            width: 95%; max-width: 450px; height: 600px;
             background: var(--grass); margin: 20px auto;
             position: relative; overflow: hidden;
             border: 4px solid white; border-radius: 12px;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.2);
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.2);
         }
         
         /* Garis Lapangan */
         .line { position: absolute; background: rgba(255,255,255,0.7); }
         .mid-line { top: 50%; left: 0; right: 0; height: 2px; }
         .center-circle { 
-            top: 50%; left: 50%; width: 70px; height: 70px; 
+            top: 50%; left: 50%; width: 80px; height: 80px; 
             border: 2px solid rgba(255,255,255,0.7); border-radius: 50%; 
             transform: translate(-50%, -50%); 
         }
+        .penalty-top { top: 0; left: 50%; width: 180px; height: 70px; border: 2px solid rgba(255,255,255,0.7); transform: translateX(-50%); border-top: none; }
+        .penalty-bot { bottom: 0; left: 50%; width: 180px; height: 70px; border: 2px solid rgba(255,255,255,0.7); transform: translateX(-50%); border-bottom: none; }
 
-        /* --- ENTITAS (PEMAIN & BOLA) --- */
-        .entity {
-            position: absolute; width: 14px; height: 14px;
+        /* --- PEMAIN & BOLA --- */
+        .player {
+            position: absolute; width: 12px; height: 12px;
             border-radius: 50%; transform: translate(-50%, -50%);
-            transition: all 0.5s ease-out; /* Gerakan halus */
-            z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Gerakan sangat halus */
+            z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.5);
         }
-        .home-p { background: var(--home); border: 2px solid white; }
-        .away-p { background: var(--away); border: 2px solid white; }
+        .home-p { background: var(--home); }
+        .away-p { background: var(--away); }
         
         .ball {
-            width: 10px; height: 10px; background: white;
+            width: 8px; height: 8px; background: white;
             border: 1px solid #333; z-index: 20;
-            transition: all 0.3s linear;
+            position: absolute; border-radius: 50%;
+            transition: all 0.4s linear;
+            transform: translate(-50%, -50%);
         }
 
-        /* --- KONTROL SIMULASI --- */
-        .controls { padding: 0 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        button {
-            padding: 10px; border: none; border-radius: 8px;
-            font-weight: bold; cursor: pointer; color: white;
+        /* --- LOG AREA --- */
+        .log-area { 
+            padding: 15px; background: white; margin: 0 15px; 
+            border-radius: 10px; height: 120px; overflow-y: auto; 
+            font-size: 0.8rem; border: 1px solid #e2e8f0;
         }
-        .btn-pass { background: #3b82f6; }
-        .btn-shoot { background: #ef4444; }
-        .btn-foul { background: #f59e0b; }
-        .btn-corner { background: #8b5cf6; }
-
-        /* --- LOG --- */
-        .log-area { padding: 15px; height: 150px; overflow-y: auto; background: white; margin-top: 15px; border-top: 1px solid #e2e8f0; }
-        .log-entry { font-size: 0.85rem; margin-bottom: 5px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; }
+        .log-entry { margin-bottom: 4px; color: #475569; }
+        .log-entry b { color: #1e293b; }
     </style>
 </head>
 <body>
 
     <header>
+        <a href="dashboard.html" style="text-decoration:none; color:black;">⬅️</a>
         <div class="score-box">FC Ultra 0 - 0 Madrid</div>
-        <div class="timer" id="gameTimer">00:00</div>
+        <div style="font-size: 0.8rem; color: #64748b;">LIVE</div>
     </header>
 
     <div class="pitch" id="pitch">
         <div class="line mid-line"></div>
         <div class="center-circle"></div>
+        <div class="penalty-top"></div>
+        <div class="penalty-bot"></div>
         
-        <!-- Pemain akan digenerate oleh JS -->
-        <div id="players-container"></div>
-        <div class="entity ball" id="ball" style="top: 50%; left: 50%;"></div>
-    </div>
-
-    <div class="controls">
-        <button class="btn-pass" onclick="triggerEvent('pass')">Umpan Pendek</button>
-        <button class="btn-shoot" onclick="triggerEvent('shoot')">Menendang!</button>
-        <button class="btn-foul" onclick="triggerEvent('foul')">Pelanggaran</button>
-        <button class="btn-corner" onclick="triggerEvent('corner')">Corner Kick</button>
+        <!-- Container Pemain -->
+        <div id="players-layer"></div>
+        <div class="ball" id="ball" style="top: 50%; left: 50%;"></div>
     </div>
 
     <div class="log-area" id="matchLog">
-        <div class="log-entry">🏁 Pertandingan dimulai!</div>
+        <div class="log-entry">🏁 Wasit memulai pertandingan!</div>
     </div>
 
     <script>
-        const pitch = document.getElementById('pitch');
-        const playersContainer = document.getElementById('players-container');
+        const playersLayer = document.getElementById('players-layer');
         const ball = document.getElementById('ball');
-        let players = [];
+        let homePlayers = [];
+        let awayPlayers = [];
 
-        // Inisialisasi Pemain (Formasi Awal)
-        function initPlayers() {
-            // Tim Home (Biru) - 3 Pemain contoh
-            createPlayer('home', 50, 80); // GK
-            createPlayer('home', 30, 60); // Defender
-            createPlayer('home', 70, 60); // Defender
+        // Formasi Awal (Persentase Top/Left)
+        // Home (Bawah - Biru): 4-3-3
+        const homeFormation = [
+            [50, 90], // GK
+            [20, 75], [40, 75], [60, 75], [80, 75], // Defenders
+            [30, 55], [50, 55], [70, 55], // Midfielders
+            [20, 30], [50, 25], [80, 30] // Forwards
+        ];
+
+        // Away (Atas - Merah): 4-4-2
+        const awayFormation = [
+            [50, 10], // GK
+            [20, 25], [40, 25], [60, 25], [80, 25], // Defenders
+            [20, 40], [40, 40], [60, 40], [80, 40], // Midfielders
+            [40, 15], [60, 15] // Forwards
+        ];
+
+        function initGame() {
+            // Buat Tim Home
+            homeFormation.forEach(pos => createPlayer('home', pos[0], pos[1]));
+            // Buat Tim Away
+            awayFormation.forEach(pos => createPlayer('away', pos[0], pos[1]));
             
-            // Tim Away (Merah) - 3 Pemain contoh
-            createPlayer('away', 50, 20); // GK
-            createPlayer('away', 30, 40); // Forward
-            createPlayer('away', 70, 40); // Forward
+            // Mulai Loop Simulasi
+            setInterval(simulatePlay, 2000);
         }
 
         function createPlayer(team, x, y) {
             const p = document.createElement('div');
-            p.className = `entity ${team === 'home' ? 'home-p' : 'away-p'}`;
+            p.className = `player ${team === 'home' ? 'home-p' : 'away-p'}`;
             p.style.left = x + '%';
             p.style.top = y + '%';
-            p.dataset.team = team;
-            playersContainer.appendChild(p);
-            players.push({ el: p, x: x, y: y, team: team });
+            playersLayer.appendChild(p);
+            
+            if (team === 'home') homePlayers.push({ el: p, baseX: x, baseY: y });
+            else awayPlayers.push({ el: p, baseX: x, baseY: y });
         }
 
-        // Logika Event Sederhana
-        function triggerEvent(type) {
-            const log = document.getElementById('matchLog');
-            let msg = "";
+        function simulatePlay() {
+            // 1. Tentukan siapa yang pegang bola (Acak antara Home/Away)
+            const isHomePossession = Math.random() > 0.5;
+            const activeTeam = isHomePossession ? homePlayers : awayPlayers;
             
-            // Acak posisi bola
-            let bx = Math.random() * 80 + 10;
-            let by = Math.random() * 80 + 10;
+            // 2. Pilih satu pemain dari tim tersebut untuk "memegang" bola
+            const ballCarrier = activeTeam[Math.floor(Math.random() * activeTeam.length)];
+            
+            // 3. Gerakkan bola ke posisi pemain tersebut
+            ball.style.left = ballCarrier.el.style.left;
+            ball.style.top = ballCarrier.el.style.top;
 
-            if (type === 'pass') {
-                msg = "⚽ Umpan pendek yang akurat ke sayap kiri!";
-                bx = 20; by = 50;
-            } else if (type === 'shoot') {
-                msg = "💥 TENDANGAN KERAS! Masih melambung tipis...";
-                bx = 50; by = 10; // Dekat gawang lawan
-            } else if (type === 'foul') {
-                msg = "🟨 WASIT meniup peluit! Pelanggaran keras di tengah lapangan.";
-                bx = 50; by = 50;
-            } else if (type === 'corner') {
-                msg = "🚩 Corner kick untuk FC Ultra United!";
-                bx = 5; by = 5;
-            }
+            // 4. Gerakkan semua pemain sedikit (Simulasi perpindahan posisi saat menyerang/membela)
+            moveTeam(homePlayers, isHomePossession ? 1 : -1);
+            moveTeam(awayPlayers, isHomePossession ? -1 : 1);
 
-            // Update Log
-            const entry = document.createElement('div');
-            entry.className = 'log-entry';
-            entry.innerText = `${new Date().toLocaleTimeString()} - ${msg}`;
-            log.prepend(entry);
+            // 5. Update Log Komentar
+            addLog(isHomePossession, ballCarrier);
+        }
 
-            // Gerakkan Bola
-            ball.style.left = bx + '%';
-            ball.style.top = by + '%';
-
-            // Gerakkan Pemain Mengejar Bola (Simulasi AI Sederhana)
-            players.forEach(p => {
-                // Pemain bergerak sedikit mendekati bola
-                let moveX = (bx - p.x) * 0.2; 
-                let moveY = (by - p.y) * 0.2;
+        function moveTeam(team, direction) {
+            team.forEach(p => {
+                // Pemain maju atau mundur sedikit berdasarkan arah serangan
+                let shift = (Math.random() * 10 - 5) + (direction * 5); 
                 
-                // Batasi agar tidak keluar lapangan
-                p.x = Math.max(5, Math.min(95, p.x + moveX));
-                p.y = Math.max(5, Math.min(95, p.y + moveY));
-                
-                p.el.style.left = p.x + '%';
-                p.el.style.top = p.y + '%';
+                // Batasi agar tidak keluar formasi dasar terlalu jauh
+                let newY = Math.max(5, Math.min(95, p.baseY + shift));
+                let newX = Math.max(5, Math.min(95, p.baseX + (Math.random() * 10 - 5)));
+
+                p.el.style.left = newX + '%';
+                p.el.style.top = newY + '%';
             });
         }
 
-        // Timer Game
-        let seconds = 0;
-        setInterval(() => {
-            seconds++;
-            let m = Math.floor(seconds / 60).toString().padStart(2, '0');
-            let s = (seconds % 60).toString().padStart(2, '0');
-            document.getElementById('gameTimer').innerText = `${m}:${s}`;
-        }, 1000);
+        function addLog(isHome, player) {
+            const log = document.getElementById('matchLog');
+            const teamName = isHome ? "FC Ultra" : "Real Madrid";
+            const actions = ["mengontrol bola", "melakukan umpan pendek", "mencoba menerobos pertahanan", "membawa bola ke sayap"];
+            const action = actions[Math.floor(Math.random() * actions.length)];
+            
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `<b>${teamName}</b> sedang menguasai bola. Pemain mereka ${action}.`;
+            log.prepend(entry);
+        }
 
-        initPlayers();
+        initGame();
     </script>
 </body>
 </html>
