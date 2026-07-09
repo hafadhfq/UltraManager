@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra Manager - Transfer</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #334155;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --pos-gk: #f59e0b;
+            --pos-def: #3b82f6;
+            --pos-mid: #10b981;
+            --pos-fwd: #ef4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding-bottom: 20px;
+            font-size: 13px;
+        }
+
+        /* --- HEADER & BUDGET --- */
+        header {
+            background: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .back-btn { text-decoration: none; font-size: 1.2rem; color: var(--text); cursor: pointer; }
+        h1 { margin: 0; font-size: 1.1rem; flex: 1; }
+        
+        .budget-badge {
+            background: #dbeafe;
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        /* --- SEARCH BAR --- */
+        .search-box {
+            padding: 15px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            outline: none;
+            box-sizing: border-box;
+            font-size: 0.9rem;
+        }
+
+        /* --- TRANSFER LIST --- */
+        .market-list { padding: 0 15px; }
+        
+        .player-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .player-card:hover { transform: translateY(-2px); }
+
+        .rating-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #1e293b;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border: 3px solid transparent;
+        }
+
+        .info-col { flex: 1; }
+        .p-name { font-weight: bold; font-size: 1rem; margin-bottom: 2px; }
+        .p-meta { font-size: 0.75rem; color: #64748b; display: flex; gap: 8px; align-items: center; }
+        
+        .pos-tag {
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: bold;
+        }
+
+        .price-action {
+            text-align: right;
+            min-width: 80px;
+        }
+        .price {
+            display: block;
+            font-weight: bold;
+            color: var(--success);
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        .btn-buy {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn-buy:active { opacity: 0.8; }
+
+        footer { text-align: center; padding: 20px; font-size: 0.7rem; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <a href="dashboard.html" class="back-btn">⬅️</a>
+        <h1>Pasar Transfer</h1>
+        <div class="budget-badge">💰 Rp 50M</div>
+    </header>
+
+    <!-- Search -->
+    <div class="search-box">
+        <input type="text" placeholder="Cari nama pemain atau posisi...">
+    </div>
+
+    <!-- List Pemain -->
+    <div class="market-list">
+        
+        <!-- Card 1 -->
+        <div class="player-card">
+            <div class="rating-circle" style="border-color: var(--pos-fwd)">92</div>
+            <img src="https://ui-avatars.com/api/?name=Kylian+Mbappe&background=random" style="width:45px; height:45px; border-radius:50%" alt="P">
+            <div class="info-col">
+                <div class="p-name">K. Mbappé</div>
+                <div class="p-meta">
+                    <span class="pos-tag" style="background:var(--pos-fwd)">ST</span>
+                    <span>25 Thn • 🇫🇷</span>
+                </div>
+            </div>
+            <div class="price-action">
+                <span class="price">Rp 120M</span>
+                <button class="btn-buy" onclick="beliPemain('K. Mbappé')">Beli</button>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="player-card">
+            <div class="rating-circle" style="border-color: var(--pos-mid)">89</div>
+            <img src="https://ui-avatars.com/api/?name=Jude+Bellingham&background=random" style="width:45px; height:45px; border-radius:50%" alt="P">
+            <div class="info-col">
+                <div class="p-name">J. Bellingham</div>
+                <div class="p-meta">
+                    <span class="pos-tag" style="background:var(--pos-mid)">CM</span>
+                    <span>21 Thn • 🏴󠁧󠁢󠁥󠁮󠁧󠁿</span>
+                </div>
+            </div>
+            <div class="price-action">
+                <span class="price">Rp 85M</span>
+                <button class="btn-buy" onclick="beliPemain('J. Bellingham')">Beli</button>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="player-card">
+            <div class="rating-circle" style="border-color: var(--pos-def)">86</div>
+            <img src="https://ui-avatars.com/api/?name=William+Saliba&background=random" style="width:45px; height:45px; border-radius:50%" alt="P">
+            <div class="info-col">
+                <div class="p-name">W. Saliba</div>
+                <div class="p-meta">
+                    <span class="pos-tag" style="background:var(--pos-def)">CB</span>
+                    <span>23 Thn • 🇫🇷</span>
+                </div>
+            </div>
+            <div class="price-action">
+                <span class="price">Rp 45M</span>
+                <button class="btn-buy" onclick="beliPemain('W. Saliba')">Beli</button>
+            </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="player-card">
+            <div class="rating-circle" style="border-color: var(--pos-gk)">84</div>
+            <img src="https://ui-avatars.com/api/?name=Mike+Maignan&background=random" style="width:45px; height:45px; border-radius:50%" alt="P">
+            <div class="info-col">
+                <div class="p-name">M. Maignan</div>
+                <div class="p-meta">
+                    <span class="pos-tag" style="background:var(--pos-gk)">GK</span>
+                    <span>29 Thn • 🇫🇷</span>
+                </div>
+            </div>
+            <div class="price-action">
+                <span class="price">Rp 25M</span>
+                <button class="btn-buy" onclick="beliPemain('M. Maignan')">Beli</button>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        &copy; 2026 Ultra Manager Project
+    </footer>
+
+    <script>
+        function beliPemain(nama) {
+            // Simulasi logika pembelian
+            const confirmBuy = confirm(`Apakah Anda yakin ingin membeli ${nama}? Dana akan langsung terpotong.`);
+            if (confirmBuy) {
+                alert(`Selamat! ${nama} telah resmi bergabung dengan klub Anda.`);
+            }
+        }
+    </script>
+
+</body>
+</html>
