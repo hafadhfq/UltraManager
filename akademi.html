@@ -1,1 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra Manager - Akademi</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #334155;
+            --border: #e2e8f0;
+            --gold: #f59e0b; /* Untuk bintang/potensi */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding-bottom: 20px;
+            font-size: 13px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .back-btn { text-decoration: none; font-size: 1.2rem; color: var(--text); cursor: pointer; }
+        h1 { margin: 0; font-size: 1.1rem; flex: 1; }
+
+        /* --- STATUS AKADMI --- */
+        .academy-status {
+            background: white;
+            margin: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .level-badge {
+            background: #dbeafe;
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        /* --- YOUTH PLAYERS GRID --- */
+        .youth-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding: 0 15px;
+        }
+
+        .youth-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            gap: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary);
+        }
+
+        .youth-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #e2e8f0;
+        }
+
+        .youth-info { flex: 1; }
+        .youth-name { font-weight: bold; font-size: 1rem; margin-bottom: 2px; }
+        .youth-meta { font-size: 0.75rem; color: #64748b; margin-bottom: 8px; }
+        
+        .potential-bar {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            color: var(--gold);
+            font-weight: bold;
+        }
+        .stars { letter-spacing: 2px; }
+
+        .btn-train {
+            background: white;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            align-self: center;
+        }
+        .btn-train:hover { background: var(--primary); color: white; }
+
+        footer { text-align: center; padding: 20px; font-size: 0.7rem; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <a href="dashboard.html" class="back-btn">⬅️</a>
+        <h1>Akademi Muda</h1>
+    </header>
+
+    <!-- Status Fasilitas -->
+    <div class="academy-status">
+        <div>
+            <div style="font-size: 0.75rem; color: #64748b;">Level Fasilitas</div>
+            <div style="font-weight: bold;">Level 4 (Pro)</div>
+        </div>
+        <div class="level-badge">Slot: 5/10</div>
+    </div>
+
+    <!-- Daftar Pemain Muda -->
+    <div class="youth-grid">
+        
+        <!-- Prospek 1 -->
+        <div class="youth-card">
+            <img src="https://ui-avatars.com/api/?name=Lamine+Yamal&background=random" class="youth-img">
+            <div class="youth-info">
+                <div class="youth-name">Lamine Yamal</div>
+                <div class="youth-meta">16 Thn • Sayap Kanan • 🇪🇸</div>
+                <div class="potential-bar">
+                    <span>Potensi:</span>
+                    <span class="stars">⭐⭐⭐⭐⭐</span>
+                </div>
+            </div>
+            <button class="btn-train" onclick="alert('Sedang melatih Lamine...')">Latih</button>
+        </div>
+
+        <!-- Prospek 2 -->
+        <div class="youth-card">
+            <img src="https://ui-avatars.com/api/?name=Endrick&background=random" class="youth-img">
+            <div class="youth-info">
+                <div class="youth-name">Endrick Felipe</div>
+                <div class="youth-meta">17 Thn • Striker • 🇧🇷</div>
+                <div class="potential-bar">
+                    <span>Potensi:</span>
+                    <span class="stars">⭐⭐⭐⭐</span>
+                </div>
+            </div>
+            <button class="btn-train" onclick="alert('Sedang melatih Endrick...')">Latih</button>
+        </div>
+
+        <!-- Prospek 3 -->
+        <div class="youth-card">
+            <img src="https://ui-avatars.com/api/?name=Warren+Zaire&background=random" class="youth-img">
+            <div class="youth-info">
+                <div class="youth-name">Warren Zaïre-Emery</div>
+                <div class="youth-meta">18 Thn • Gelandang • 🇫🇷</div>
+                <div class="potential-bar">
+                    <span>Potensi:</span>
+                    <span class="stars">⭐⭐⭐⭐</span>
+                </div>
+            </div>
+            <button class="btn-train" onclick="alert('Sedang melatih Warren...')">Latih</button>
+        </div>
+
+    </div>
+
+    <footer>
+        &copy; 2026 Ultra Manager Project
+    </footer>
+
+</body>
+</html>
 
