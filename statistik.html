@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra Manager - Statistik</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #334155;
+            --border: #e2e8f0;
+            --chart-bar: #3b82f6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding-bottom: 20px;
+            font-size: 13px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .back-btn { text-decoration: none; font-size: 1.2rem; color: var(--text); cursor: pointer; }
+        h1 { margin: 0; font-size: 1.1rem; flex: 1; }
+
+        /* --- TAB NAVIGASI --- */
+        .tabs {
+            display: flex;
+            background: white;
+            padding: 10px 15px;
+            gap: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        .tab {
+            font-weight: bold;
+            color: #94a3b8;
+            cursor: pointer;
+            padding-bottom: 5px;
+        }
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        /* --- KARTU STATISTIK UTAMA --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 15px;
+        }
+        .stat-box {
+            background: var(--card);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .stat-num { font-size: 1.5rem; font-weight: bold; color: var(--primary); margin: 5px 0; }
+        .stat-label { font-size: 0.75rem; color: #64748b; }
+
+        /* --- CHART SECTION --- */
+        .chart-section {
+            background: var(--card);
+            margin: 0 15px 15px 15px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .chart-title { font-weight: bold; margin-bottom: 15px; font-size: 0.9rem; }
+        
+        .bar-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .bar-label { width: 80px; font-size: 0.8rem; }
+        .bar-wrapper { flex: 1; height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
+        .bar-fill { height: 100%; background: var(--chart-bar); border-radius: 4px; }
+        .bar-value { width: 40px; text-align: right; font-size: 0.8rem; font-weight: bold; }
+
+        /* --- TOP SCORER LIST --- */
+        .scorer-list { padding: 0 15px; }
+        .scorer-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .scorer-info { display: flex; align-items: center; gap: 10px; }
+        .rank { font-weight: bold; color: #94a3b8; width: 20px; }
+        .goal-badge { background: #1e293b; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; }
+
+        footer { text-align: center; padding: 20px; font-size: 0.7rem; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <a href="dashboard.html" class="back-btn">⬅️</a>
+        <h1>Analisis Performa</h1>
+    </header>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tab active">Tim</div>
+        <div class="tab">Pemain</div>
+        <div class="tab">Musim</div>
+    </div>
+
+    <!-- Ringkasan Angka -->
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-label">Posisi Liga</div>
+            <div class="stat-num">#2</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Total Gol</div>
+            <div class="stat-num">24</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Clean Sheet</div>
+            <div class="stat-num">5</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Rata-rata Penguasaan</div>
+            <div class="stat-num">62%</div>
+        </div>
+    </div>
+
+    <!-- Grafik Batang (CSS Only) -->
+    <div class="chart-section">
+        <div class="chart-title">📊 Statistik Pertandingan (Last 5)</div>
+        
+        <div class="bar-container">
+            <span class="bar-label">Possession</span>
+            <div class="bar-wrapper"><div class="bar-fill" style="width: 65%"></div></div>
+            <span class="bar-value">65%</span>
+        </div>
+        
+        <div class="bar-container">
+            <span class="bar-label">Shots on Target</span>
+            <div class="bar-wrapper"><div class="bar-fill" style="width: 45%"></div></div>
+            <span class="bar-value">45%</span>
+        </div>
+        
+        <div class="bar-container">
+            <span class="bar-label">Pass Accuracy</span>
+            <div class="bar-wrapper"><div class="bar-fill" style="width: 88%"></div></div>
+            <span class="bar-value">88%</span>
+        </div>
+
+        <div class="bar-container">
+            <span class="bar-label">Defense</span>
+            <div class="bar-wrapper"><div class="bar-fill" style="width: 72%"></div></div>
+            <span class="bar-value">72%</span>
+        </div>
+    </div>
+
+    <!-- Top Scorer -->
+    <div class="section-title" style="padding: 0 15px; margin-bottom: 10px; font-weight: bold;">🥇 Top Skor Musim Ini</div>
+    <div class="scorer-list">
+        <div class="scorer-item">
+            <div class="scorer-info">
+                <span class="rank">1</span>
+                <img src="https://ui-avatars.com/api/?name=Erling+Haaland&background=random" style="width:30px; height:30px; border-radius:50%">
+                <span>E. Haaland</span>
+            </div>
+            <span class="goal-badge">12 Gol</span>
+        </div>
+        <div class="scorer-item">
+            <div class="scorer-info">
+                <span class="rank">2</span>
+                <img src="https://ui-avatars.com/api/?name=Phil+Foden&background=random" style="width:30px; height:30px; border-radius:50%">
+                <span>P. Foden</span>
+            </div>
+            <span class="goal-badge">8 Gol</span>
+        </div>
+        <div class="scorer-item">
+            <div class="scorer-info">
+                <span class="rank">3</span>
+                <img src="https://ui-avatars.com/api/?name=Julian+Alvarez&background=random" style="width:30px; height:30px; border-radius:50%">
+                <span>J. Alvarez</span>
+            </div>
+            <span class="goal-badge">4 Gol</span>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 Ultra Manager Project
+    </footer>
+
+</body>
+</html>
