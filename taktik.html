@@ -1,1 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra Manager - Taktik</title>
+    <style>
+        :root { --primary: #2563eb; --bg: #f1f5f9; --card: #ffffff; --text: #334155; --border: #e2e8f0; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 20px; }
+        header { background: white; padding: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+        .back-btn { text-decoration: none; font-size: 1.2rem; cursor: pointer; }
+        h1 { margin: 0; font-size: 1.1rem; flex: 1; }
+
+        .pitch-container { margin: 20px 15px; background: #10b981; height: 300px; border-radius: 12px; position: relative; border: 4px solid white; box-shadow: inset 0 0 20px rgba(0,0,0,0.2); }
+        .pitch-line { position: absolute; border: 2px solid rgba(255,255,255,0.5); }
+        
+        /* Posisi Pemain di Lapangan */
+        .pos-dot {
+            width: 30px; height: 30px; background: white; border-radius: 50%;
+            position: absolute; transform: translate(-50%, -50%);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 0.7rem; color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .formation-selector { padding: 0 15px; margin-top: 20px; }
+        select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: white; font-size: 1rem; }
+        
+        .strategy-box { background: white; margin: 15px; padding: 15px; border-radius: 12px; }
+        .strategy-title { font-weight: bold; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="dashboard.html" class="back-btn">⬅️</a>
+        <h1>Taktik & Formasi</h1>
+    </header>
+
+    <div class="formation-selector">
+        <select onchange="updateFormation(this.value)">
+            <option value="4-3-3">4-3-3 (Attacking)</option>
+            <option value="4-4-2">4-4-2 (Balanced)</option>
+            <option value="5-3-2">5-3-2 (Defensive)</option>
+        </select>
+    </div>
+
+    <div class="pitch-container" id="pitch">
+        <!-- Garis Tengah -->
+        <div class="pitch-line" style="top: 50%; left: 0; right: 0;"></div>
+        <!-- Titik Pemain (Contoh 4-3-3) -->
+        <div class="pos-dot" style="top: 85%; left: 50%;">GK</div>
+        <div class="pos-dot" style="top: 70%; left: 20%;">LB</div>
+        <div class="pos-dot" style="top: 70%; left: 40%;">CB</div>
+        <div class="pos-dot" style="top: 70%; left: 60%;">CB</div>
+        <div class="pos-dot" style="top: 70%; left: 80%;">RB</div>
+        <div class="pos-dot" style="top: 50%; left: 30%;">CM</div>
+        <div class="pos-dot" style="top: 50%; left: 50%;">CDM</div>
+        <div class="pos-dot" style="top: 50%; left: 70%;">CM</div>
+        <div class="pos-dot" style="top: 25%; left: 20%;">LW</div>
+        <div class="pos-dot" style="top: 20%; left: 50%;">ST</div>
+        <div class="pos-dot" style="top: 25%; left: 80%;">RW</div>
+    </div>
+
+    <div class="strategy-box">
+        <div class="strategy-title">Instruksi Tim</div>
+        <div style="font-size: 0.85rem; color: #64748b;">
+            <p>• Gaya Bermain: <b>Menyerang Sayap</b></p>
+            <p>• Tekanan: <b>Tinggi</b></p>
+            <p>• Tempo: <b>Cepat</b></p>
+        </div>
+    </div>
+</body>
+</html>
 
