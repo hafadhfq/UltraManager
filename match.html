@@ -3,152 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultra Manager - Live Match v4</title>
+    <title>Ultra Manager - Match Final</title>
     <style>
         :root {
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #1e293b;
-            --border: #e2e8f0;
-            --home-color: #10b981; /* Hijau */
-            --away-color: #3b82f6; /* Biru */
-            --primary: #2563eb;
+            --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+            --border: #e2e8f0; --home: #10b981; --away: #3b82f6; --primary: #2563eb;
         }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* --- HEADER DASHBOARD STYLE --- */
-        header {
-            background: white;
-            padding: 12px 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            z-index: 50;
-        }
-        .back-link { 
-            text-decoration: none; color: var(--text); font-size: 0.85rem; 
-            display: flex; align-items: center; gap: 5px; font-weight: 500;
-        }
+        /* HEADER */
+        header { background: white; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); z-index: 50; }
+        .back-link { text-decoration: none; color: var(--text); font-size: 0.85rem; font-weight: 500; }
         .header-title { font-weight: bold; font-size: 0.95rem; }
 
-        /* --- SCOREBOARD COMPACT --- */
-        .scoreboard {
-            background: linear-gradient(to right, #1e293b, #0f172a);
-            color: white;
-            padding: 15px;
-            text-align: center;
-        }
+        /* SCOREBOARD */
+        .scoreboard { background: linear-gradient(to right, #1e293b, #0f172a); color: white; padding: 15px; text-align: center; }
         .score-row { display: flex; justify-content: space-between; align-items: center; max-width: 300px; margin: 0 auto; }
         .team { font-weight: bold; font-size: 0.85rem; width: 30%; }
         .score { font-size: 1.8rem; font-weight: 800; letter-spacing: 1px; }
         .timer { font-family: monospace; color: #4ade80; font-size: 0.8rem; margin-top: 5px; }
+        .toggle-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 14px; border-radius: 15px; font-size: 0.7rem; cursor: pointer; margin-top: 10px; }
 
-        .toggle-btn {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
-            padding: 5px 14px;
-            border-radius: 15px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        /* --- STATISTIK PANEL (FIXED LAYOUT) --- */
-        #statsPanel {
-            background: white;
-            padding: 15px;
-            border-bottom: 1px solid var(--border);
-            display: none;
-            animation: slideDown 0.3s ease;
-            max-height: 45vh;
-            overflow-y: auto;
-        }
+        /* STATISTIK PANEL (LABEL DI ATAS BAR) */
+        #statsPanel { background: white; padding: 15px; border-bottom: 1px solid var(--border); display: none; animation: slideDown 0.3s ease; max-height: 45vh; overflow-y: auto; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .stat-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 0.8rem;
-        }
-
-        /* Layout 3 Kolom Presisi */
-        .val-left { width: 40px; text-align: right; font-weight: bold; z-index: 2; }
-        .label-center { flex: 1; text-align: center; color: #64748b; font-size: 0.75rem; z-index: 2; padding: 0 5px;}
-        .val-right { width: 40px; text-align: left; font-weight: bold; z-index: 2; }
-
-        /* Bar Container Terpisah (Tidak Absolut terhadap teks) */
-        .bar-track {
-            position: absolute;
-            top: 50%; left: 45px; right: 45px; /* Sesuai lebar val-left/right */
-            height: 6px; background: #f1f5f9; border-radius: 3px;
-            transform: translateY(-50%); display: flex; overflow: hidden; z-index: 1;
-        }
-        .bar-fill-home { background: var(--home-color); height: 100%; transition: width 0.6s ease; }
-        .bar-fill-away { background: var(--away-color); height: 100%; transition: width 0.6s ease; }
         
-        .stat-content { position: relative; width: 100%; display: flex; align-items: center; justify-content: space-between; }
-
-        /* --- LIVE COMMENTARY (TOP TO BOTTOM, LIMIT 4 ROWS) --- */
-        .log-container {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            background: var(--bg);
-            /* Batasi tinggi visual ~4 baris komentar (tinggi item ~45px x 4 = 180px) */
-            max-height: 190px; 
-            display: flex;
-            flex-direction: column; /* Atas ke Bawah */
-            gap: 8px;
-        }
-
-        .log-item {
-            background: white;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border-left: 4px solid #cbd5e1;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            font-size: 0.85rem;
-            line-height: 1.4;
-            min-height: 22px; /* Menjaga konsistensi tinggi */
-        }
+        .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .stat-item { display: flex; flex-direction: column; align-items: center; }
+        .stat-label { font-size: 0.7rem; color: #64748b; margin-bottom: 6px; text-align: center; font-weight: 500; }
         
+        .bar-container { width: 100%; height: 8px; background: #f1f5f9; border-radius: 4px; display: flex; overflow: hidden; position: relative; }
+        .bar-home { background: var(--home); height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .bar-away { background: var(--away); height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        .stat-values { display: flex; justify-content: space-between; width: 100%; font-size: 0.75rem; font-weight: bold; margin-top: 4px; }
+        .val-h { color: var(--home); }
+        .val-a { color: var(--away); }
+
+        /* LIVE COMMENTARY (TOP TO BOTTOM, MAX 4 ROWS) */
+        .log-container { flex: 1; padding: 15px; overflow-y: auto; background: var(--bg); max-height: 190px; display: flex; flex-direction: column; gap: 8px; }
+        .log-item { background: white; padding: 10px 12px; border-radius: 8px; border-left: 4px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05); font-size: 0.85rem; line-height: 1.4; }
         .log-goal { border-left-color: #f59e0b; background: #fffbeb; }
         .log-chance { border-left-color: #8b5cf6; background: #f5f3ff; }
-        .log-card { border-left-color: #ef4444; background: #fef2f2; }
+        .log-card-y { border-left-color: #fbbf24; background: #fffbeb; }
+        .log-card-r { border-left-color: #ef4444; background: #fef2f2; }
         .log-corner { border-left-color: #3b82f6; background: #eff6ff; }
         .log-time { font-weight: bold; color: #64748b; margin-right: 8px; font-size: 0.75rem; }
 
-        /* --- FOOTER NAVIGATION --- */
-        footer {
-            background: white;
-            border-top: 1px solid var(--border);
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .footer-nav { display: flex; gap: 15px; width: 100%; justify-content: center; }
-        .nav-link { 
-            text-decoration: none; color: #64748b; font-size: 0.75rem; 
-            display: flex; flex-direction: column; align-items: center; gap: 3px;
-        }
+        /* FOOTER */
+        footer { background: white; border-top: 1px solid var(--border); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .footer-nav { display: flex; gap: 20px; width: 100%; justify-content: center; }
+        .nav-link { text-decoration: none; color: #64748b; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 3px; }
         .nav-link.active { color: var(--primary); font-weight: bold; }
-        .nav-icon { font-size: 1.2rem; }
-
         .control-panel { display: flex; gap: 8px; }
         .btn { padding: 6px 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.75rem; }
         .btn-pause { background: #f1f5f9; color: var(--text); }
@@ -157,14 +63,12 @@
 </head>
 <body>
 
-    <!-- Header Navigasi -->
     <header>
-        <a href="dashboard.html" class="back-link">⬅️ Kembali ke Dashboard</a>
+        <a href="dashboard.html" class="back-link">⬅️ Kembali</a>
         <div class="header-title">Live Match</div>
-        <div style="width: 120px;"></div> <!-- Spacer agar title tetap tengah -->
+        <div style="width: 80px;"></div>
     </header>
 
-    <!-- Scoreboard -->
     <div class="scoreboard">
         <div class="score-row">
             <div class="team">FC Ultra</div>
@@ -172,224 +76,180 @@
             <div class="team">Real Madrid</div>
         </div>
         <div class="timer" id="timerDisplay">00'</div>
-        <button class="toggle-btn" onclick="toggleStats()"> Statistik</button>
+        <button class="toggle-btn" onclick="toggleStats()"> Statistik Lengkap</button>
     </div>
 
-    <!-- Panel Statistik (Layout Fixed) -->
+    <!-- Panel Statistik dengan Label di Atas Bar -->
     <div id="statsPanel">
-        <!-- Penguasaan Bola -->
-        <div class="stat-row">
-            <div class="stat-content">
-                <div class="val-left" id="s_poss_h">50%</div>
-                <div class="label-center">Penguasaan bola</div>
-                <div class="val-right" id="s_poss_a">50%</div>
-                <div class="bar-track">
-                    <div class="bar-fill-home" id="bar_poss_h" style="width: 50%"></div>
-                    <div class="bar-fill-away" id="bar_poss_a" style="width: 50%"></div>
-                </div>
+        <div class="stat-grid">
+            <div class="stat-item">
+                <div class="stat-label">Penguasaan Bola</div>
+                <div class="bar-container"><div class="bar-home" id="bar_poss_h" style="width:50%"></div><div class="bar-away" id="bar_poss_a" style="width:50%"></div></div>
+                <div class="stat-values"><span class="val-h" id="s_poss_h">50%</span><span class="val-a" id="s_poss_a">50%</span></div>
             </div>
-        </div>
-
-        <!-- Ekspektasi Gol (xG) -->
-        <div class="stat-row">
-            <div class="stat-content">
-                <div class="val-left" id="s_xg_h">0.00</div>
-                <div class="label-center">Ekspektasi gol (xG)</div>
-                <div class="val-right" id="s_xg_a">0.00</div>
-                <div class="bar-track">
-                    <div class="bar-fill-home" id="bar_xg_h" style="width: 50%"></div>
-                    <div class="bar-fill-away" id="bar_xg_a" style="width: 50%"></div>
-                </div>
+            <div class="stat-item">
+                <div class="stat-label">Ekspektasi Gol (xG)</div>
+                <div class="bar-container"><div class="bar-home" id="bar_xg_h" style="width:50%"></div><div class="bar-away" id="bar_xg_a" style="width:50%"></div></div>
+                <div class="stat-values"><span class="val-h" id="s_xg_h">0.00</span><span class="val-a" id="s_xg_a">0.00</span></div>
             </div>
-        </div>
-
-        <!-- Total Tembakan -->
-        <div class="stat-row">
-            <div class="stat-content">
-                <div class="val-left" id="s_shot_h">0</div>
-                <div class="label-center">Total tembakan</div>
-                <div class="val-right" id="s_shot_a">0</div>
-                <div class="bar-track">
-                    <div class="bar-fill-home" id="bar_shot_h" style="width: 50%"></div>
-                    <div class="bar-fill-away" id="bar_shot_a" style="width: 50%"></div>
-                </div>
+            <div class="stat-item">
+                <div class="stat-label">Total Tembakan</div>
+                <div class="bar-container"><div class="bar-home" id="bar_shot_h" style="width:50%"></div><div class="bar-away" id="bar_shot_a" style="width:50%"></div></div>
+                <div class="stat-values"><span class="val-h" id="s_shot_h">0</span><span class="val-a" id="s_shot_a">0</span></div>
             </div>
-        </div>
-
-        <!-- Tendangan Sudut -->
-        <div class="stat-row">
-            <div class="stat-content">
-                <div class="val-left" id="s_cor_h">0</div>
-                <div class="label-center">Tendangan sudut</div>
-                <div class="val-right" id="s_cor_a">0</div>
-                <div class="bar-track">
-                    <div class="bar-fill-home" id="bar_cor_h" style="width: 50%"></div>
-                    <div class="bar-fill-away" id="bar_cor_a" style="width: 50%"></div>
-                </div>
+            <div class="stat-item">
+                <div class="stat-label">Tembakan On Target</div>
+                <div class="bar-container"><div class="bar-home" id="bar_sot_h" style="width:50%"></div><div class="bar-away" id="bar_sot_a" style="width:50%"></div></div>
+                <div class="stat-values"><span class="val-h" id="s_sot_h">0</span><span class="val-a" id="s_sot_a">0</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Pelanggaran</div>
+                <div class="bar-container"><div class="bar-home" id="bar_foul_h" style="width:50%"></div><div class="bar-away" id="bar_foul_a" style="width:50%"></div></div>
+                <div class="stat-values"><span class="val-h" id="s_foul_h">0</span><span class="val-a" id="s_foul_a">0</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Tendangan Sudut</div>
+                <div class="bar-container"><div class="bar-home" id="bar_cor_h" style="width:50%"></div><div class="bar-away" id="bar_cor_a" style="width:50%"></div></div>
+                <div class="stat-values"><span class="val-h" id="s_cor_h">0</span><span class="val-a" id="s_cor_a">0</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Lemparan Dalam</div>
+                <div class="bar-container"><div class="bar-home" id="bar_throw_h" style="width:50%"></div><div class="bar-away" id="bar_throw_a" style="width:50%"></div></div>
+                <div class="stat-values"><span class="val-h" id="s_throw_h">0</span><span class="val-a" id="s_throw_a">0</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Kartu Kuning</div>
+                <div class="bar-container"><div class="bar-home" id="bar_yc_h" style="width:50%"></div><div class="bar-away" id="bar_yc_a" style="width:50%"></div></div>
+                <div class="stat-values"><span class="val-h" id="s_yc_h">0</span><span class="val-a" id="s_yc_a">0</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Kartu Merah</div>
+                <div class="bar-container"><div class="bar-home" id="bar_rc_h" style="width:50%"></div><div class="bar-away" id="bar_rc_a" style="width:50%"></div></div>
+                <div class="stat-values"><span class="val-h" id="s_rc_h">0</span><span class="val-a" id="s_rc_a">0</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Operan Sukses</div>
+                <div class="bar-container"><div class="bar-home" id="bar_pass_h" style="width:50%"></div><div class="bar-away" id="bar_pass_a" style="width:50%"></div></div>
+                <div class="stat-values"><span class="val-h" id="s_pass_h">0</span><span class="val-a" id="s_pass_a">0</span></div>
             </div>
         </div>
     </div>
 
-    <!-- Area Komentar (Top-to-Bottom, Max 4 Rows Visible) -->
     <div class="log-container" id="logBox">
-        <div class="log-item">
-            <span class="log-time">00'</span> Pertandingan dimulai! Wasit meniup peluit awal.
-        </div>
+        <div class="log-item"><span class="log-time">00'</span> Pertandingan dimulai! Wasit meniup peluit awal.</div>
     </div>
 
-    <!-- Footer Navigasi & Kontrol -->
     <footer>
         <div class="control-panel">
             <button class="btn btn-pause" onclick="togglePause()" id="btnPause">⏸️</button>
             <button class="btn btn-resume" onclick="togglePause()" id="btnResume">▶️</button>
         </div>
-        
         <div class="footer-nav">
-            <a href="dashboard.html" class="nav-link">
-                <span class="nav-icon">🏠</span> Dashboard
-            </a>
-            <a href="match_v4.html" class="nav-link active">
-                <span class="nav-icon">⚽</span> Match
-            </a>
-            <a href="taktik.html" class="nav-link">
-                <span class="nav-icon">📋</span> Taktik
-            </a>
+            <a href="dashboard.html" class="nav-link"><span>🏠</span>Dashboard</a>
+            <a href="match_final.html" class="nav-link active"><span></span>Match</a>
+            <a href="taktik.html" class="nav-link"><span>📋</span>Taktik</a>
         </div>
     </footer>
 
     <script>
-        // --- STATE GAME ---
-        let minute = 0;
-        let scoreH = 0, scoreA = 0;
-        let isPaused = false;
-        let momentum = 50; 
-        
-        let stats = {
-            possH: 50, possA: 50,
-            xGH: 0.0, xGA: 0.0,
-            shotH: 0, shotA: 0,
-            corH: 0, corA: 0
-        };
+        let minute = 0, scoreH = 0, scoreA = 0, isPaused = false, momentum = 50, matchEnded = false;
+        let stats = { possH:50, possA:50, xGH:0, xGA:0, shotH:0, shotA:0, sotH:0, sotA:0, foulH:0, foulA:0, corH:0, corA:0, throwH:0, throwA:0, ycH:0, ycA:0, rcH:0, rcA:0, passH:0, passA:0 };
 
         function startMatch() {
-            setInterval(() => {
+            const interval = setInterval(() => {
+                if (matchEnded) { clearInterval(interval); return; }
                 if (!isPaused && minute < 90) {
                     minute++;
                     document.getElementById('timerDisplay').innerText = minute + "'";
                     processMinute();
-                } else if (minute === 90) {
-                    addLog(90, "neutral", " Pertandingan Selesai!");
+                } else if (minute >= 90) {
+                    matchEnded = true;
+                    addLog(90, "neutral", " 🏁 PELUIT AKHIR! Pertandingan Selesai.");
                     isPaused = true; updateButtons();
+                    clearInterval(interval); // Hentikan live comment & engine
                 }
             }, 1200);
         }
 
         function processMinute() {
             momentum += (Math.random() * 10 - 5);
-            if (momentum > 95) momentum = 95;
-            if (momentum < 5) momentum = 5;
-
+            if (momentum > 95) momentum = 95; if (momentum < 5) momentum = 5;
             if (momentum > 50) stats.possH++; else stats.possA++;
+            
+            // Simulasi operan setiap menit
+            if (momentum > 50) stats.passH += Math.floor(Math.random()*3)+1; else stats.passA += Math.floor(Math.random()*3)+1;
+            // Simulasi lemparan dalam acak
+            if (Math.random() < 0.3) { if(momentum>50) stats.throwH++; else stats.throwA++; }
 
             let roll = Math.random() * 100;
             if ((momentum > 80 && roll < 3) || (momentum < 20 && roll < 2)) triggerGoal();
             else if ((momentum > 70 && roll < 8) || (momentum < 30 && roll < 6)) triggerBigChance();
             else if (roll < 12) triggerCorner();
             else if (roll > 96) triggerFoul();
+            else if (roll > 99.5) triggerRedCard();
             
             updateStatsUI();
         }
 
         function triggerGoal() {
-            if (momentum > 50) {
-                scoreH++; stats.xGH += 0.85;
-                addLog(minute, "goal", `⚽ GOLLL!! FC Ultra mencetak gol! Skor ${scoreH}-${scoreA}`);
-            } else {
-                scoreA++; stats.xGA += 0.85;
-                addLog(minute, "goal", `⚽ GOLLL!! Real Madrid membalas! Skor ${scoreH}-${scoreA}`);
-            }
-            document.getElementById('scoreDisplay').innerText = `${scoreH} - ${scoreA}`;
-            momentum = 50; 
+            if (momentum > 50) { scoreH++; stats.xGH += 0.85; stats.sotH++; addLog(minute, "goal", `⚽ GOL!! FC Ultra memimpin! ${scoreH}-${scoreA}`); } 
+            else { scoreA++; stats.xGA += 0.85; stats.sotA++; addLog(minute, "goal", ` GOL!! Real Madrid menyamakan! ${scoreH}-${scoreA}`); }
+            document.getElementById('scoreDisplay').innerText = `${scoreH} - ${scoreA}`; momentum = 50;
         }
 
         function triggerBigChance() {
-            if (momentum > 50) {
-                stats.shotH++; stats.xGH += 0.45;
-                addLog(minute, "chance", "🔥 Peluang Emas! Tembakan keras FC Ultra masih membentur tiang!");
-            } else {
-                stats.shotA++; stats.xGA += 0.45;
-                addLog(minute, "chance", "🔥 Peluang Emas! Vinicius Jr lolos tapi tendangannya melambung!");
-            }
+            if (momentum > 50) { stats.shotH++; stats.xGH += 0.45; if(Math.random()>0.4) stats.sotH++; addLog(minute, "chance", "🔥 Peluang Emas! Tembakan keras masih bisa diselamatkan!"); } 
+            else { stats.shotA++; stats.xGA += 0.45; if(Math.random()>0.4) stats.sotA++; addLog(minute, "chance", "🔥 Peluang Emas! Tendangan melambung tipis di atas mistar!"); }
         }
 
-        function triggerCorner() {
-            if (momentum > 50) { stats.corH++; addLog(minute, "corner", "🚩 Corner kick untuk FC Ultra United."); }
-            else { stats.corA++; addLog(minute, "corner", "🚩 Corner kick untuk Real Madrid."); }
+        function triggerCorner() { if (momentum > 50) { stats.corH++; addLog(minute, "corner", "🚩 Corner kick untuk FC Ultra."); } else { stats.corA++; addLog(minute, "corner", " Corner kick untuk Real Madrid."); } }
+        
+        function triggerFoul() { 
+            if (momentum > 50) stats.foulA++; else stats.foulH++; 
+            if (Math.random() > 0.7) { if(momentum>50) stats.ycA++; else stats.ycH++; addLog(minute, "card-y", "🟨 Kartu Kuning! Pelanggaran keras."); }
+            else addLog(minute, "neutral", "⚠️ Pelanggaran ringan, wasit hanya memberi peringatan lisan.");
         }
 
-        function triggerFoul() {
-            addLog(minute, "card", " Kartu Kuning! Wasit menegur pemain karena pelanggaran telat.");
-        }
+        function triggerRedCard() { if (momentum > 50) stats.rcA++; else stats.rcH++; addLog(minute, "card-r", " KARTU MERAH! Pemain diusir dari lapangan!"); }
 
         function addLog(time, type, text) {
+            if (matchEnded && type !== "neutral") return; // Hentikan komen non-final jika match ended
             const box = document.getElementById('logBox');
             const div = document.createElement('div');
             div.className = `log-item log-${type}`;
             div.innerHTML = `<span class="log-time">${time}'</span> ${text}`;
-            box.appendChild(div); // Append ke bawah (Top-to-Bottom)
-            
-            // Auto scroll ke bawah saat ada komen baru
+            box.appendChild(div);
             box.scrollTop = box.scrollHeight;
-            
-            // Hapus log lama jika terlalu banyak (>30 item)
             if (box.children.length > 30) box.removeChild(box.firstChild);
         }
 
         function toggleStats() {
-            const panel = document.getElementById('statsPanel');
-            const btn = document.querySelector('.toggle-btn');
-            if (panel.style.display === 'none' || panel.style.display === '') {
-                panel.style.display = 'block';
-                btn.innerText = "🙈 Sembunyikan";
-            } else {
-                panel.style.display = 'none';
-                btn.innerText = "📊 Statistik";
-            }
+            const p = document.getElementById('statsPanel'); const b = document.querySelector('.toggle-btn');
+            if (p.style.display === 'none' || p.style.display === '') { p.style.display = 'block'; b.innerText = "🙈 Sembunyikan"; } 
+            else { p.style.display = 'none'; b.innerText = "📊 Statistik Lengkap"; }
         }
 
-        function updateBar(idH, idA, valH, valA) {
-            let total = valH + valA;
-            if (total === 0) total = 1;
-            let pctH = (valH / total) * 100;
-            
-            document.getElementById(idH).innerText = (typeof valH === 'number' && !Number.isInteger(valH)) ? valH.toFixed(2) : valH;
-            document.getElementById(idA).innerText = (typeof valA === 'number' && !Number.isInteger(valA)) ? valA.toFixed(2) : valA;
-            
-            document.getElementById('bar_' + idH.replace('s_', '')).style.width = pctH + "%";
-            document.getElementById('bar_' + idA.replace('s_', '')).style.width = (100-pctH) + "%";
+        function updateBar(idH, idA, vH, vA, suffix="") {
+            let t = vH + vA; if (t === 0) t = 1; let pH = (vH / t) * 100;
+            document.getElementById(idH).innerText = (typeof vH === 'number' && !Number.isInteger(vH)) ? vH.toFixed(2) : vH + suffix;
+            document.getElementById(idA).innerText = (typeof vA === 'number' && !Number.isInteger(vA)) ? vA.toFixed(2) : vA + suffix;
+            document.getElementById('bar_' + idH.replace('s_', '')).style.width = pH + "%";
+            document.getElementById('bar_' + idA.replace('s_', '')).style.width = (100-pH) + "%";
         }
 
         function updateStatsUI() {
-            let totalPoss = stats.possH + stats.possA;
-            let pH = totalPoss === 0 ? 50 : Math.round((stats.possH / totalPoss) * 100);
-            document.getElementById('s_poss_h').innerText = pH + "%";
-            document.getElementById('s_poss_a').innerText = (100-pH) + "%";
-            document.getElementById('bar_poss_h').style.width = pH + "%";
-            document.getElementById('bar_poss_a').style.width = (100-pH) + "%";
-
-            updateBar('s_xg_h', 's_xg_a', stats.xGH, stats.xGA);
-            updateBar('s_shot_h', 's_shot_a', stats.shotH, stats.shotA);
-            updateBar('s_cor_h', 's_cor_a', stats.corH, stats.corA);
+            let tp = stats.possH + stats.possA; let pH = tp===0?50:Math.round((stats.possH/tp)*100);
+            document.getElementById('s_poss_h').innerText = pH+"%"; document.getElementById('s_poss_a').innerText = (100-pH)+"%";
+            document.getElementById('bar_poss_h').style.width = pH+"%"; document.getElementById('bar_poss_a').style.width = (100-pH)+"%";
+            updateBar('s_xg_h','s_xg_a',stats.xGH,stats.xGA); updateBar('s_shot_h','s_shot_a',stats.shotH,stats.shotA);
+            updateBar('s_sot_h','s_sot_a',stats.sotH,stats.sotA); updateBar('s_foul_h','s_foul_a',stats.foulH,stats.foulA);
+            updateBar('s_cor_h','s_cor_a',stats.corH,stats.corA); updateBar('s_throw_h','s_throw_a',stats.throwH,stats.throwA);
+            updateBar('s_yc_h','s_yc_a',stats.ycH,stats.ycA); updateBar('s_rc_h','s_rc_a',stats.rcH,stats.rcA);
+            updateBar('s_pass_h','s_pass_a',stats.passH,stats.passA);
         }
 
-        function togglePause() {
-            isPaused = !isPaused; updateButtons();
-        }
-
-        function updateButtons() {
-            document.getElementById('btnPause').style.display = isPaused ? 'none' : 'inline-block';
-            document.getElementById('btnResume').style.display = isPaused ? 'inline-block' : 'none';
-        }
+        function togglePause() { isPaused = !isPaused; updateButtons(); }
+        function updateButtons() { document.getElementById('btnPause').style.display = isPaused?'none':'inline-block'; document.getElementById('btnResume').style.display = isPaused?'inline-block':'none'; }
 
         startMatch();
     </script>
