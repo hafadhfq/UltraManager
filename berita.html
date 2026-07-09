@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra Manager - Berita Terkini</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #334155;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding-bottom: 20px;
+            font-size: 13px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .back-btn { text-decoration: none; font-size: 1.2rem; color: var(--text); cursor: pointer; }
+        h1 { margin: 0; font-size: 1.1rem; flex: 1; }
+
+        /* --- HEADLINE UTAMA --- */
+        .headline-card {
+            background: white;
+            margin: 15px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .headline-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        .headline-content {
+            padding: 15px;
+        }
+        .tag {
+            background: var(--primary);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .headline-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 8px 0;
+            line-height: 1.4;
+        }
+        .headline-meta {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        /* --- LIST BERITA --- */
+        .news-section-title {
+            padding: 0 15px;
+            margin: 20px 0 10px 0;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .news-list { padding: 0 15px; }
+
+        .news-item {
+            background: white;
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        .news-thumb {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #e2e8f0;
+        }
+        .news-info { flex: 1; }
+        .news-title { font-weight: bold; font-size: 0.9rem; margin-bottom: 4px; line-height: 1.3; }
+        .news-excerpt { font-size: 0.75rem; color: #64748b; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .news-date { font-size: 0.7rem; color: #94a3b8; margin-top: 5px; }
+
+        footer { text-align: center; padding: 20px; font-size: 0.7rem; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <a href="dashboard.html" class="back-btn">⬅️</a>
+        <h1>Berita & Gosip</h1>
+    </header>
+
+    <!-- Headline Utama -->
+    <div class="headline-card">
+        <img src="https://picsum.photos/seed/stadium/600/300" class="headline-img" alt="Headline">
+        <div class="headline-content">
+            <span class="tag">EKSKLUSIF</span>
+            <div class="headline-title">Stadion Baru "Ultra Arena" Resmi Dibuka Presiden!</div>
+            <div class="headline-meta">Oleh Redaksi • 2 Jam yang lalu</div>
+        </div>
+    </div>
+
+    <!-- Daftar Berita -->
+    <div class="news-section-title">Berita Terbaru</div>
+    <div class="news-list">
+        
+        <!-- Berita 1 -->
+        <div class="news-item">
+            <img src="https://picsum.photos/seed/player1/200/200" class="news-thumb">
+            <div class="news-info">
+                <div class="news-title">Striker Muda Cetak Hatrick di Debutnya</div>
+                <div class="news-excerpt">Penampilan menakjubkan dari akademi membuat pelatih kepala tersenyum lebar usai pertandingan.</div>
+                <div class="news-date">📅 Hari ini, 10:30 WIB</div>
+            </div>
+        </div>
+
+        <!-- Berita 2 -->
+        <div class="news-item">
+            <img src="https://picsum.photos/seed/coach/200/200" class="news-thumb">
+            <div class="news-info">
+                <div class="news-title">Konferensi Pers: "Kami Fokus Liga Dulu"</div>
+                <div class="news-excerpt">Manajer menolak berkomentar soal rumor transfer dan menegaskan prioritas tim saat ini.</div>
+                <div class="news-date">📅 Kemarin, 19:00 WIB</div>
+            </div>
+        </div>
+
+        <!-- Berita 3 -->
+        <div class="news-item">
+            <img src="https://picsum.photos/seed/trophy/200/200" class="news-thumb">
+            <div class="news-info">
+                <div class="news-title">Prediksi Juara: Analis Mengunggulkan Tim Kita</div>
+                <div class="news-excerpt">Berdasarkan performa 5 laga terakhir, FC Ultra United diprediksi akan finis di 3 besar.</div>
+                <div class="news-date">📅 2 Hari yang lalu</div>
+            </div>
+        </div>
+
+        <!-- Berita 4 -->
+        <div class="news-item">
+            <img src="https://picsum.photos/seed/injury/200/200" class="news-thumb">
+            <div class="news-info">
+                <div class="news-title">Update Cedera: Bek Tengah Kembali Latihan</div>
+                <div class="news-excerpt">Kabar gembira bagi lini pertahanan sebelum menghadapi laga derby minggu depan.</div>
+                <div class="news-date">📅 3 Hari yang lalu</div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        &copy; 2026 Ultra Manager Project
+    </footer>
+
+</body>
+</html>
